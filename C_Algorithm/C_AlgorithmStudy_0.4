@@ -1,0 +1,107 @@
+// (큐를 이용한) 은행 대기번호 관리
+// 큐(queue) = 먼저 들어간 데이터가 먼저 나오는 자료구조 
+// 조건 1. 0보다 작은 수가 입력된 경우 프로그램 종료
+// 조건 2. 0을 입력시 큐가 비어있는 경우 "queue empty!" 출력
+// 조건 3. 배열이 가득 차있는 경우 "queue full!" 출력
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#define QUEUE_CAPACITY 8
+
+#include <stdio.h>
+
+int save_queue(int number);
+
+void print_queue();
+
+// 전역변수
+// 전역변수는 자동으로 0값으로 초기화된다. * 지역변수는 초기화를 해줘야함 *
+int queue[QUEUE_CAPACITY];
+int head; // 가장 처음에 들어온 배열번호
+int tail = -1; // 가장 마지막에 들어온 배열번호
+int queue_size = 0; // 현재 대기 번호
+
+int save_queue(int number)
+{
+	if (queue_size == QUEUE_CAPACITY)
+	{
+		printf("queue full\n");
+		
+		return;
+	}
+	else if (queue_size < QUEUE_CAPACITY)
+	{
+		tail++;
+		queue_size++;
+		queue[tail] = number;
+
+		return;
+	}
+}
+
+void print_queue()
+{
+	int value;
+
+	if (queue_size == 0)
+	{
+		printf("queue empty!\n");
+	}
+	else if (queue_size > 0)
+	{
+		value = queue[head];
+		head++;
+		queue_size--;
+		
+		printf("[%d]\n", value);
+	}
+}
+
+void main()
+{
+	int number, save_print;
+
+	do
+	{
+		printf("\ninput number : ");
+		scanf("%d", &number);
+		printf("\n");
+
+		if (number > 0)
+		{
+			save_queue(number);
+		}
+		else if (number == 0)
+		{
+			print_queue(); // 전역변수이기 때문에 값을 안넣어도 상관없다.
+		}
+
+	} while (number >= 0);
+
+	/*
+	do while문
+		예시코드)
+		#include <stdio.h>
+
+		int main()
+		{
+			int i = 0;
+
+			do     // 처음 한 번은 아래 코드가 실행됨
+			{
+				printf("Hello, world! %d\n", i);    // Hello, world!와 i의 값을 함께 출력
+				i++;                                // i를 1씩 증가시킴
+			} while (i < 100);						//i가 100보다 작을 때 반복. 0부터 99까지 증가하면서 100번 반복
+
+			return 0;
+		}
+
+		실행결과)
+		ello, world! 0
+		Hello, world! 1
+		... (생략)
+		Hello, world! 97
+		Hello, world! 98
+		Hello, world! 99
+	*/
+}
