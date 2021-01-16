@@ -1,0 +1,149 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct NODE //노드를 선언
+{
+	int key; // 저장할 번호
+	struct NODE* next; // 다음 번호 주소
+}node_t;
+
+// 전역변수
+node_t* head = NULL, * tail = NULL; // node를 통한 선언 및 초기화
+
+void insert_node(int number);
+int delete_node();
+void printf_list_1(node_t* from);
+void printf_list_2(node_t* from);
+
+void insert_node(int number)
+{
+	node_t* new_node = (node_t*)malloc(sizeof(node_t)); // 동적할당
+	new_node->key = number;
+	new_node->next = NULL;
+
+	if (head == NULL)
+	{
+		head = new_node;
+		tail = new_node;
+	}
+	else
+	{
+		tail->next = new_node;
+		tail = new_node;
+	}
+}
+
+int delete_node()
+{
+	node_t* node;
+	int r;
+
+	if (head == NULL)
+	{
+		return -1;
+	}
+
+	node = head;
+	head = head->next;
+
+	if (head == NULL)
+	{
+		tail = NULL;
+	}
+
+	r = node->key;
+	free(node);
+
+	return r;
+}
+
+void printf_list_1(node_t* from) // 저장된 모든 저장된 값 불러오기
+{
+	node_t* node; 
+
+	node = from;
+	
+	while (node != NULL) // node가 0이 될 때까지
+	{
+		printf("[%d] ", node->key); // 출력
+		node = node->next; // 다음 주소
+	}
+}
+
+void printf_list_2(node_t* from)
+{
+	if (from == NULL) // from이 0이 될 때까지
+	{
+		return;
+	}
+
+	printf("[%d] ", from->key); // 출력
+	printf_list_2(from->next); // 다음 주소 보내기
+}
+
+void printf_list_3(node_t* from) // 역순으로 출력
+{
+	if (from == NULL) // from이 0이 될 때까지
+	{
+		return;
+	}
+
+	printf_list_3(from->next); // 다음 주소 보내기 
+	printf("[%d] ", from->key); // 출력
+
+	/*
+	예를 들어 1, 2, 3, 4, 5를 입력했을 때 큐이므로 1, 2, 3, 4, 5가 나와야한다.
+	다음 주소 보내기를 위로 올리므로 1을 출력하기 전에 2주소로 보내고 2를 출력하기 전에 3주소로 보내고 이렇게 5까지 도달한다.
+	도달 후에 5가 정상적으로 출력이 되면 밀렸던 4가 출력되고 그 다음 3, 2, 1이 순차적으로 출력되므로 역순이 된다.
+	*/
+}
+
+void main()
+{
+	int number, r;
+
+	do
+	{
+		printf("\ninput number : ");
+		scanf("%d", &number);
+		printf("\n");
+
+		if (number > 0)
+		{
+			insert_node(number);
+		}
+		else if (number == 0)
+		{
+			r = delete_node();
+
+			if (r == -1) // 만약 비어있다면 뜨는 메시지
+			{
+				printf("queue empty!\n");
+			}
+			else // 비어있지 않다면 나오는 메시지
+			{
+				printf("[%d]\n", r);
+			}
+		}
+		else
+		{
+			/* 1. 일반적인 방식 */
+			// printf_list_1(head);
+
+			/* 2. 재귀적 방식 */
+			// printf_list_2(head);
+
+			/* 3. 재귀적 방식 (역순) */
+			printf_list_3(head); 
+		}
+
+	} while (number >= 0);
+}
