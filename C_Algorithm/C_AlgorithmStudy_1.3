@@ -1,0 +1,68 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*  
+	이항계수 (= nCr) 
+	 ex) 6C3 = 6 * 5 * 4 / 3 * 2 * 1
+
+    메모이제이션 :
+	 컴퓨터 프로그램이 동일한 계산을 반복해야 할 때, 이전에 계산한 값을 메모리에 저장함으로써
+	 동일한 계산의 반복 수행을 제거하여 프로그램 실행 속도를 빠르게 하는 기술이다. 동적 계획법의 핵심이 되는 기술이다.
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define max 200
+
+long long choose_1(int n, int r);
+long long choose_2(int n, int r);
+
+long long choose_1(int n, int r) // 수가 커지면 연산이 많아지기 때문에 출력에 오랜 시간이 필요하다.
+{
+	if (r == 0 || n == r)
+	{
+		return 1;
+	}
+
+	return choose_1(n - 1, r - 1) + choose_1(n - 1, r);
+	/*
+		이항계수를 최소까지 계속 분해하므로 분해된 수들의 합이 값으로 출력된다.
+		즉, 1이 나오게 최소한으로 분해한 후 1들의 합이 값이 된다.
+	*/
+}
+
+long long choose_2(int n, int r) // choose_1의 문제점인 수가 커지면 시간이 오래 걸리는 것을 개선 (메모이제이션을 이용한 방식)
+{
+	static long long memo[max][max];
+
+	if (memo[n][r] > 0) // 0보다 크면 이미 계산된 상태이므로 이 값 그대로 반환
+	{
+		return memo[n][r];
+	}
+
+	if (r == 0 || n == r) // 0이면 아직 계산된 적이 없으므로 값을 저장한 후 반환
+	{
+		return memo[n][r] = 1;
+	}
+
+	return memo[n][r] = choose_2(n - 1, r - 1) + choose_2(n - 1, r);
+
+	/*
+		예를 들어 이미 계산된 20C1이 있다고 가정하자. 근데 프로그램상 20C10을 분해하다보면 20C1이 나오고 20C9를 분해하면 20C1이 나온다.
+		그러므로 중복계산을 안해도 되는 메모이제이션 방식은 계산을 획기적으로 줄여준다.
+	*/
+}
+
+int main()
+{
+	int n, r;
+	printf("n과 r을 입력하시오.\n");
+	scanf("%d %d", &n, &r);
+	
+	//printf("\n%d", choose_1(n, r));
+	printf("\n%d", choose_2(n, r));
+
+	return 0;
+}
