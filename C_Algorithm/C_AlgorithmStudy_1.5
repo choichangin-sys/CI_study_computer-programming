@@ -1,0 +1,64 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	금액 맞추기
+	 1만 원, 2만 원, 5만 원, 10만 원, 20만 원, 50만 원이 있다고 가정하자
+	 100만원을 지불 할 수 있는 방법은 모두 몇 가지일까?
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define max 50
+
+int pay(int money, int bills[], int num_bills);
+
+int pay(int money, int bills[], int num_bills)
+{
+	int count = 0, t;
+
+	if (num_bills == 1)
+	{
+		if (money % bills[0] == 0)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	t = money / bills[num_bills - 1];
+
+	for (int i = 0; i < t; i++)
+	{
+		count += pay(money - bills[num_bills - 1] * i, bills, num_bills - 1);
+	}
+
+	return count;
+}
+
+int main()
+{
+	int num_bills, money;
+	int bills[max];
+	
+	printf("input number or bills : ");
+	scanf("%d", &num_bills);
+
+	for (int i = 0; i < num_bills; i++)
+	{
+		printf("input bills : ");
+		scanf("%d", &bills[i]);
+	}
+
+	printf("input money : ");
+	scanf("%d", &money);
+
+	printf("%d\n", pay(money, bills, num_bills));
+
+	return 0;
+}
