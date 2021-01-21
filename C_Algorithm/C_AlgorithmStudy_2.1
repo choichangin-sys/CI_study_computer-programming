@@ -1,0 +1,114 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	출근길
+	 조건 1. 공사를 하고 있는 곳을 지나갈 수 없다.
+	 조건 2. 최단 경로를 고려해야한다.
+	 조건 3. 5x5배열로 볼 수 있으며
+			 2 1 1 1 1		1  1  1  1  1
+			 1 1 0 0 1      1  2  0  0  1
+			 1 1 1 1 1  =>  1  3  3  3  4
+			 1 1 1 0 1		1  4  7  0  4
+			 0 0 1 1 2		0  0  7  7 (11)
+			 이러한 형태이고 0 : 공사중인 곳, 1 : 지나갈 수 있는 곳, 2 : 시작점 or 도착점 (시작점은 (0,0)으로 한다.)
+			 경우의 수는 11이다.
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define M 100
+#define N 100
+
+long long num_path(int m, int n);
+void calculate_path(int m, int n);
+
+int map[M][N];
+long long path[M][N];
+
+long long num_path(int m, int n) // 배열이 크면 계산하는데 오래 걸림.
+{
+	if (map[m][n] == 0)
+	{
+		return 0;
+	}
+	if (m == 0 && n == 0)
+	{
+		return 1;
+	}
+
+	return ((m > 0) ? num_path(m - 1, n) : 0) + ((n > 0) ? num_path(m, n - 1) : 0);
+}
+
+void calculate_path(int m, int n) // 배열이 커도 상관없음.
+{
+	path[0][0] = map[0][0];
+
+	for (int i = 1; i < m; i++)
+	{
+		if (map[i][0] == 0)
+		{
+			path[i][0] = 0;
+		}
+		else
+		{
+			path[i][0] = path[i - 1][0];
+		}
+	}
+	
+	for (int j = 1; j < n; j++)
+	{
+		if (map[0][j] == 0)
+		{
+			path[0][j] = 0;
+		}
+		else
+		{
+			path[0][j] = path[0][j - 1];
+		}
+	}
+
+	for (int i = 1; i < m; i++)
+	{
+		for (int j = 1; j < n; j++)
+		{
+			if (map[i][j] == 0)
+			{
+				path[i][j] = 0;
+			}
+			else
+			{
+				path[i][j] = path[i - 1][j] + path[i][j - 1];
+			}
+		}
+	}
+
+	printf("\n%lld\n", path[m - 1][n - 1]);
+}
+
+int main()
+{
+	int m, n, i, j;
+
+	printf("지도의 크기를 입력하시오.\n");
+	scanf("%d %d", &m, &n);
+
+	printf("(m,n)를 입력하시오 통행불가 : 0, 통행가능 : 1\n");
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			scanf("%d", &map[i][j]); // 지도의 공사중인 곳과 아닌 곳을 입력받음.
+		}
+	}
+
+	/* 1. 최단 거리 출력됨(작은 배열만 가능). */
+	printf("\n%lld\n", num_path(m - 1, n - 1));
+
+	/* 2. 최단 거리 출력됨(큰 배열도 가능). */
+	calculate_path(m, n);
+
+	return 0;
+}
