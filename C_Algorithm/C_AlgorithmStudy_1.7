@@ -1,0 +1,85 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	Gray code (그레이 코드)
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 20
+
+void print_code(int code[], int arr_len);
+void print_gray(int code[], int n, int index);
+void print_gray_reverse(int code[], int n, int index);
+void print_gray_short(int code[], int n, int index, int reverse); // 재귀호출을 이용하여 짧게 줄임.
+
+void print_gray_reverse(int code[], int n, int index)
+{
+	if (index == n)
+	{
+		print_code(code, n);
+		return;
+	}
+
+	code[index] = 1;
+	print_gray(code, n, index + 1);
+	code[index] = 0;
+	print_gray_reverse(code, n, index + 1);
+}
+
+void print_gray(int code[], int n, int index)
+{
+	if (index == n)
+	{
+		print_code(code, n);
+
+		return;
+	}
+
+	code[index] = 0;
+	print_gray(code, n, index + 1);
+	code[index] = 1;
+	print_gray_reverse(code, n, index + 1);
+}
+
+void print_gray_short(int code[], int n, int index, int reverse) // 함수 2개를 합쳐서 한 개로 줄인 함수 
+{
+	if (index == n)
+	{
+		print_code(code, n);
+
+		return;
+	}
+
+	code[index] = reverse;
+	print_gray(code, n, index + 1, 0);
+	code[index] = 1 - reverse;
+	print_gray_reverse(code, n, index + 1, 1);
+}
+
+void print_code(int code[], int len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		printf("%d ", code[i]);
+	}
+	printf("\n");
+}
+
+int main()
+{
+	int code[MAX], n;
+
+	printf("몇 비트인지 입력하세요.\n");
+	scanf("%d", &n);
+	/* 1. 그레이 코드 만드는 코드 */
+	print_gray(code, n, 0);
+
+	/* 2. 그레이 코드 만드는 코드_version_short */
+	//print_gray_short(code, n, 0, 0);
+
+	return 0;
+}
