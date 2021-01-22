@@ -1,0 +1,180 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	출근길은 즐거워
+	 조건 1. 공사를 하고 있는 곳은 없다.
+	 조건 2. 동네의 각 위치마다 아름다운 정도를 나타내는 자연수 값이 있다.
+	 조건 3. 출근에 지각 할 수 없으므로 최단 거리로 출근한다.
+	 조건 4. 5x5배열로 볼 수 있으며
+			 1 2 2 1 5
+			 1 4 4 3 1   
+			 2 1 1 1 2 
+			 1 3 5 1 1	
+			 1 5 1 2 2		
+			 예를 들어 이러한 형태면 최대값은 22이다.
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define M 100
+#define N 100
+
+int map[M][N];
+int joy[M][N];
+int from[M][N];
+
+enum 
+{
+	LEFT, UP
+};
+
+int MAX(int x, int y);
+int max_joy(int m, int n);
+void calculate_joy(int m, int n);
+void calculate_joy_form(int m, int n);
+
+int MAX(int x, int y)
+{
+	if (x > y)
+	{
+		return x;
+	}
+
+	return y;
+}
+
+int max_joy(int m, int n) // 재귀적 프로그래밍
+{
+	if (m == 0 && n == 0)
+	{
+		return map[0][0];
+	}
+	if (m == 0)
+	{
+		return max_joy(m, n - 1) + map[m][n];
+	}
+	if (n == 0)
+	{
+		return max_joy(m - 1, n) + map[m][n];
+	}
+
+	return MAX(max_joy(m - 1, n), max_joy(m, n - 1)) + map[m][n];
+}
+
+void calculate_joy(int m, int n) // 동적 프로그래밍
+{
+	int i, j;
+	joy[0][0] = map[0][0];
+
+	for (i = 1; i < m; i++)
+	{
+		joy[i][0] = joy[i - 1][0] + map[i][0];
+	}
+
+	for (j = 1; j < n; j++)
+	{
+		joy[0][j] = joy[0][j - 1] + map[0][j];
+	}
+
+	for (i = 1; i < m; i++)
+	{
+		for (j = 1; j < n; j++)
+		{
+			joy[i][j] = MAX(joy[i - 1][j], joy[i][j - 1]) + map[i][j];
+		}
+	}
+	
+	printf("\n%d\n", joy[i - 1][j - 1]);
+}
+
+void calculate_joy_form(int m, int n) // 동적 프로그래밍
+{
+	int i, j;
+	joy[0][0] = map[0][0];
+
+	for (i = 1; i < m; i++)
+	{
+		joy[i][0] = joy[i - 1][0] + map[i][0];
+		from[i][0] = LEFT;
+	}
+
+	for (j = 1; j < n; j++)
+	{
+		joy[0][j] = joy[0][j - 1] + map[0][j];
+		from[0][j] = UP;
+	}
+
+	for (i = 1; i < m; i++)
+	{
+		for (j = 1; j < n; j++)
+		{
+			if (joy[i - 1][j] > joy[i][j - 1])
+			{
+				from[i][j] = LEFT;
+			}
+			else
+			{
+				from[i][j] = UP;
+			}
+
+			joy[i][j] = MAX(joy[i - 1][j], joy[i][j - 1]) + map[i][j];
+		}
+	}
+
+	printf("\n%d\n", joy[i - 1][j - 1]);
+}
+
+void print_path(int m, int n)
+{
+	if (m == 0 && n == 0)
+	{
+		return;
+	}
+
+	/* 끝지점부터 출력 */
+	//printf("(%d %d)", m, n);
+
+	if (from[m][n] == LEFT)
+	{
+		print_path(m - 1, n);
+	}
+	else
+	{
+		print_path(m, n - 1);
+	}
+
+	/* Algorithm_1.2를 이용한 역순으로(시작지점부터) 출력*/
+	printf("(%d %d)", m, n);
+}
+
+int main()
+{
+	int m, n;
+
+	printf("지도의 크기를 입력하시오.\n");
+	scanf("%d %d", &m, &n);
+
+	printf("(m,n)를 입력하시오 통행불가는 없으나 각 위치마다 아름다운 곳에 대한 점수가 있음.\n");
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			scanf("%d", &map[i][j]); // 거리의 아름다움 수치를 입력받음.
+		}
+	}
+
+	/* 1. 재귀적 프로그래밍. */
+	printf("\n%d\n", max_joy(m - 1, n - 1));
+
+	/* 2. 동적 프로그래밍. */
+	calculate_joy(m, n);
+
+	/* 3. 동적 프로그래밍 + 경로 출력을 위한 함수*/
+	calculate_joy_form(m, n);
+	print_path(m - 1, n - 1);
+
+	return 0;
+}
