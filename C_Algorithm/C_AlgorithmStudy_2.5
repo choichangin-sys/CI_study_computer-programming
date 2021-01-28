@@ -1,0 +1,114 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	최대 이익 투자
+	 회사에 투자를 했을 때 정해진 돈으로 돌려받는다. 그렇다면 최대 이익을 낸다면 얼마인가?
+
+	 총 투자액 : 4, 회사 3
+
+ 투자액 | A | B | C |
+	  0   | 0 | 0 | 0 |
+		1   | 2 | 3 | 1 |
+		2   | 4 | 5 | 3 |
+		3   | 6 | 6 | 7 |
+		4   | 9 | 8 | 9 |
+
+		MAX Value : 10
+
+	메모이제이션 :
+	 컴퓨터 프로그램이 동일한 계산을 반복해야 할 때, 이전에 계산한 값을 메모리에 저장함으로써
+	 동일한 계산의 반복 수행을 제거하여 프로그램 실행 속도를 빠르게 하는 기술이다. 동적 계획법의 핵심이 되는 기술이다.
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define M 100
+#define N 100
+
+int r[M][N];
+int max_return[M][N];
+
+void calculate_return(int n, int m);
+
+void calculate_return(int n, int m)
+{
+	int i, j, k, max, t;
+
+	max = 0;
+
+	for (i = 0; i <= m; i++)
+	{
+		max_return[0][i] = r[0][i];
+	}
+
+	printf("\n");
+	for (i = 0; i < n; i++) {
+		
+		printf("%d번 회사 : ", i + 1);
+
+		for (j = 0; j < m + 1; j++) {
+			printf("%d ", r[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+	
+
+	for (i = 1; i <= n; i++) // i : 기업
+	{
+		for (j = 1; j <= m; j++)
+		{
+			// j : 투자할 금액
+			// 기업 수(i) 투자할 양(j)을 작은 수로 시작해서 기록한다.
+
+			max = -1;
+
+			for (k = 0; k <= j; k++)
+			{
+				// 이전에 투자한 회사와 액수에 대한 내용을 바탕으로 시작
+				// t : 이전 회사에 k를 투자한 양과 지금 회사에 j에서 k만큼 이전 회사에 투자한 양을 뺀 경우
+				// 이전 회사랑만 비교하냐고 묻는 다면 동적프로그래밍으로 계속 그 최대값이 각 배열마다 누적될 것이다.
+				// 그러므로 이전 내용과는 비교할 이유가 없다.
+				t = max_return[i - 1][k] + r[i][j - k];
+
+				if (t > max)
+				{
+					max = t;
+				}
+			}
+			max_return[i][j] = max;
+		}
+	}
+}
+
+int main()
+{
+	int m, n, i ,j;
+	
+	printf("투자할 금액과 회사의 수를 입력하시오.\n");
+	scanf("%d %d", &m, &n);
+
+	for (int i = 0; i < n; i++)
+	{
+		r[i][0] = 0;
+	}
+
+	for (i = 1; i <= m; i++)
+	{
+		printf("%d만원을 투자한 경우\n", i);
+
+		for (j = 0; j < n; j++)
+		{
+			scanf("%d", &r[j][i]);
+		}
+	}
+
+	calculate_return(n, m);
+
+	printf("Max return : %d\n", max_return[n - 1][m]);
+
+	return 0;
+}
