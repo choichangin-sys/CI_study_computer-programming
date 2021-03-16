@@ -1,0 +1,105 @@
+출처 표시 : "이것이 리눅스다 [개정판][with RedHat CentOS 8]" <저자 : 우재남> <출판사 : 한빛미디어> <출간년도 : 초판 2015년 7월 1일 (개정판 2쇄 : 2020년 9월 20일)>
+
+Windows는 다중 개념이 부족하다. (혼자 쓰고 운용하기 때문에)
+Linus는 다중 사용자 시스템(Multi-User System)이다.
+
+기본적으로 root라는 이름을 가진 슈퍼유저(Superuser)가 있으며, 모든 작업을 할 수 있는 권한이 존재
+
+모든 사용자를 하나 이상의 그룹에 소속되어 있음.
+
+사용자는 /etc/passwd 파일에 정의되어 있음.
+
+* 사용자와 그룹 관련된 명령어 *
+사용자 생성 시 옵션
+-u : ID 지정
+-g : 그룹 지정
+-d : 홈 디렉터리 지정
+-s : 셸 지정
+
+useradd : 새로운 사용자를 추가
+ex) useradd newuser
+* group 안에 사용자를 바로 만드는 것은 useradd -g (그룹명) (사용자명) *
+
+passwd : 사용자의 비밀번호를 지정하거나 변경
+ex) passwd newuser
+
+
+usermod : 사용자의 속성을 변경 (group을 바꾸는 등)
+ex) usermod -g root newuser
+
+
+userdel : 사용자를 삭제
+ex) userdel newuser
+
+* userdel newuser 이렇게 입력한 경우 newuser(사용자)는 삭제되지만 홈 디렉터리는 남아있다. 그렇기에 userdel -r newuser 라고 입력하면 홈 디렉터리까지 삭제된다. *
+
+
+chage : 사용자의 암호를 주기적으로 변경하도록 설정
+ex) chage -m 2 newuser
+
+
+groups : 현재 사용자가 속한 그룹을 보여줌 (한 명의 user가 여러 그룹에 속할 수 있음.)
+
+
+groupadd : 새로운 그룹을 생성
+ex) groupadd newgroup
+
+
+groupmod : 그룹의 속성을 변경
+ex) groupmod -n newgroup mygroup
+
+
+groupdel : 그룹을 삭제
+ex) groupdel newgroup
+
+
+gpasswd : 그룹의 암호를 설정하거나, 그룹의 관리를 수행
+ex) gpasswd newgroup
+
+ls -a /etc/skel와 useradd를 이용해 생성한 사용자(user1)의 디렉터리(숨겨져 있음.)를 보면 똑같다. 그렇기에 무언가 배포를 할 때 /etc/skel에 넣어두면 이후 사용자들은 그 파일을 들고 만들어진다. ( 사용자 생성시 /etc/skel의 파일과 디렉터리를 복사하여 만들기 때문. )
+
+파일과 디렉터리의 소유권과 허가권 개념이 존재한다.
+
+ls를 입력 시 -rw-r--r-- 1 root root 0 3월 16 00:01 test.txt가 나온다. ( touch test.txt로 만듦(빈 파일 만들기 : touch) )
+이 때, [ - / rw-r--r-- / 1 / root / root / 0 / 3월 16 00:01 / test.txt ]로 나뉘며 순서대로 [ 파일 유형 / 파일 허가권 / 링크 수 / 파일 소유자 이름 / 파일 소유그룹 이름 / 파일 크기(Byte) / 마지막 변경 날짜/시간 / 파일 이름 ]로 해석 할 수 있다.
+
+
+파일 유형 : 디렉터리인 경우 d, 일반적인 파일일 경우 -가 표시됨.
+
+
+파일 허가권 (Permission) : "rw-", "r--", "r--" 3개씩 끊어 읽는다. ( r = read, w = write, x = execute)
+                                  첫 번째 "rw-"는 소유자(User)의 파일접근 권한, 두 번째 "r--"는 그룹(Group)의 파일접근 권한 세 번째 "r--"는 그 외 사용자(Other)의 파일접근 권한이다. 또한 숫자로도 표시가 가능하다.(8진수) "rw-"는 4 2 0이고 "r--"는 4이다. 만약 "---"이면 0인 것이다. 
+
+
+chmod 명령 : 파일 허가권 변경 명령어
+ex) chmod 777 sample.txt
+* 상대적인 방식도 있다. chmod u+x test라고 입력하면 소유자(User)에 실행권한이 생긴다. 이와 같은 방법으로 chmod g+x test [그룹에 권한 부여(실행 권한)],  chmod o+w test [그 외 사용자에 권한 부여(쓰기 권한)] *
+* 반대로 허가권을 빼는 방식도 있다 chmod (ugo)-(rwx) (파일명)이다. 이때, u(소유자), g(그룹), o(그 외에 사용자)에서 빼고 싶은 부분만 사용하면 된다. *
+ex) chmod ug-rx sample.txt (= 소유자와 그룹에서 r과 x 허가를 뺏는다.)
+
+
+파일 소유권 (Ownership) : 파일을 소유한 사용자와 그룹을 의미
+
+
+chown/chgrp 명령 : 파일의 소유권을 바꾸는 명령어
+ex) chown (user).(group) (파일명) or chown centos sample.txt [파일 소유권 변경] / chgrp [그룹 소유권 변경]
+
+
+su - (사용자) : 사용자로 넘어갈 수 있음.
+
+
+whoami : 내가 관리자인지 사용자인지 알 수 있음. (root가 나오던가 다른 사용자면 사용자 이름이 나옴.)
+
+알아두기
+* root사용자가 가지고 있는 파일을 mv test ~centos(~centos는 centos가 어느 디렉터리에 있는 상관없이 보내는 찾는 것)을 통해 파일을 옮기면 root에 test파일은 없어지고 su - centos를 통해 이동해보면 test 파일이 존재한다. *
+
+링크 : 파일의 링크(Link)에는 하드 링크(Hard Link)와 싱볼릭 링크(Symbolic Link or Soft Link) 두 가지가 있음.
+
+하드 링크를 생성하면 "하드 링크 파일"만 하나 생성되며 같은 inode 블록을 사용함.
+[명령 : ln (링크 대상 파일 이름) (링크 파일 이름)]
+
+심볼릭 링크를 생성하면 새로운 inode를 만들고, 데이터는 원본 파일을 연결하는 효과
+[명령 : ln -s (링크 대상 파일 이름) (링크 파일 이름)]
+* 심볼릭 링크 Windows의 바로 가기 아이콘과 개념이 비슷하다. *
+* ln -il 명령어를 이용하면 링크를 확인 할 수 있다. *
+* 파일을 생성하고 하드 링크와 소프트 링크를 생성하면 링크의 값이 하드 링크는 원본파일과 같지만, 소프트 링크는 다르다는 것을 확인 할 수 있다. 또한 원본파일을 이동시키면 소프트 링크는 깨지고(오류 발생) 빨간색으로 반짝거린다. 파일을 다시 원래대로 되돌리고 소프트 링크를 다시 작동시키면 정상작동 되는 것을 알 수 있다. *
