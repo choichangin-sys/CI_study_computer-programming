@@ -17,7 +17,7 @@ Linux는 VMware을 이용하여 1개의 컴퓨터로 4개의 가상 컴퓨터를
 
 교육 받은 과목
 
-=> C=
- > C++
+=> C
+ => C++
 
 => WindowsProject
