@@ -1,4 +1,4 @@
-# CI_study_computer-programming
+# CI_study_Computer-Programming
 
 C_Algorithm은 Visual Studio 2019를 사용해서 코딩했으며 다음과 같은 책을 보고 공부함.
 
