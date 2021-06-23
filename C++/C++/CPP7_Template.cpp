@@ -1,0 +1,63 @@
+#pragma once
+
+
+#include<iostream>
+
+//#define ON_MAIN
+#ifdef ON_MAIN
+
+using namespace std;
+/*
+int MyMax(int a, int b)
+{
+	return a > b ? a : b;
+}
+
+double MyMax(double a, double b)
+{
+	return a > b ? a : b;
+}
+
+char MyMax(char a, char b)
+{
+	return a > b ? a : b;
+}
+*/
+
+// 함수 템플릿의 정의
+template <typename T>T  MyMax(T a, T b)
+{
+	return a > b ? a : b;
+}
+
+template <typename T> void MySwap(T& n, T& m)
+{
+	T temp;
+	temp = n;
+	n = m;
+	m = temp;
+}
+
+int main()
+{
+	//cout << MyMax(10, 20) << endl;
+	//cout << MyMax(3.14, 31.4) << endl;
+	//cout << MyMax('A', 'B') << endl;
+	//cout << MyMax<double>(30.12, 31) << endl; // T = double이라는 의미.
+
+	int i = 50, j = 10;
+	cout << "Before " << "i = " << i << ", j = " << j << endl;
+	MySwap(i, j);
+	cout << "After " << "i = " << i << ", j = " << j << endl;
+
+	char c1 = 'A';
+	char c2 = 'B';
+	cout << "Before " << "i = " << i << ", j = " << j << endl;
+	MySwap(c1, c2);
+	cout << "After " << "i = " << i << ", j = " << j << endl;
+
+	return 0;
+}
+
+#endif // !ON_MAIN
+

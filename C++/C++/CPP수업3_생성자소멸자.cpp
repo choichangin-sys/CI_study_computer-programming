@@ -1,0 +1,232 @@
+////////////////////////////////////////
+// CPP수업 3 : 객체지향 언어로서의 C++
+// - 생성자와 소멸자
+////////////////////////////////////////
+
+#include <iostream>
+
+//#define ON_MAIN
+#ifdef ON_MAIN
+using namespace std;
+
+int main()
+{
+	//cout << "CPP수업 2 : 객체지향 언어로서의 C++\n";
+	//생성자와 소멸자
+	if (0)
+	{
+		class CTest
+		{
+		public:
+			CTest()
+			{
+				cout << "CTest::CTest()" << endl;
+			}
+
+			~CTest()
+			{
+				cout << "~CTest::CTest()" << endl;
+			}
+		};
+		/////////////////////////////////////
+		//1.객체생성
+		cout << "Begin" << endl;
+		CTest a;
+		cout << "End" << endl;
+
+		/////////////////////////////////////
+		//2.객체의 동적생성
+		cout << "Begin" << endl;
+
+		// new 연산자를 이용해 동적으로 객체를 생성한다.
+		CTest* pData = new CTest;
+		cout << "Test" << endl;
+
+		// delete 연산자를 이용해 객체를 삭제한다.
+		delete pData;
+		cout << "End" << endl;
+	}
+	//디폴트 생성자
+	if(0)
+	{
+		class CTest
+		{
+		public:
+			// 디폴트 생성자 선언
+			CTest(void) { }
+			int m_nData = 5;
+		};
+		CTest a;
+		cout << a.m_nData << endl;
+	}
+	//생성자와 초기화 목록
+	if (0)
+	{
+		class CTest
+		{
+			// 기본 접근 제어 지시자는 'private'이다.
+			int m_nData;
+
+		public:
+			// 생성자의 매개변수로 전달된 값으로 멤버 변수를 초기화한다.
+			CTest(int nParam) : m_nData(nParam)
+			{
+				cout << "CTest::CTest()" << endl;
+			}
+
+			~CTest()
+			{
+				// 생성할 때 매개변수로 받은 값을 출력한다.
+				cout << "~CTest::CTest() " << m_nData << endl;
+			}
+		};
+		cout << "Begin" << endl;
+		CTest a(1);
+		cout << "Before b" << endl;
+		CTest b(2);
+		cout << "End" << endl;
+	}
+	//생성자 오버로딩 1
+	if (0)
+	{
+		class CMyData
+		{
+		public:
+			// 디폴트 생성자는 없다.
+			// 매개변수가 int 하나인 생성자 함수 선언 및 정의
+			CMyData(int nParam) : m_nData(nParam) { };
+
+			// 매개변수가 int 자료형 두 개인 생성자 함수 다중 정의
+			CMyData(int x, int y) : m_nData(x + y) { };
+
+			int GetData(void) { return m_nData; }
+
+		private:
+			int m_nData;
+		};
+		CMyData a(10);
+		CMyData b(3, 4);
+
+		cout << a.GetData() << endl;
+		cout << b.GetData() << endl;
+	}
+	//생성자 오버로딩 2
+	if (0)
+	{
+		class CMyPoint
+		{
+		public:
+			CMyPoint(int x)
+			{
+				cout << "CMyPoint(int)" << endl;
+				// x 값이 100이 넘는지 검사하고 넘으면 100으로 맞춘다.
+				if (x > 100)
+					x = 100;
+
+				m_x = 100;
+			}
+
+			CMyPoint(int x, int y)
+				// x 값을 검사하는 코드는 이미 존재하므로 재사용한다.
+				: CMyPoint(x)
+			{
+				cout << "CMyPoint(int, int)" << endl;
+
+				// y 값이 200이 넘는지 검사하고 넘으면 200으로 맞춘다.
+				if (y > 200)
+					y = 200;
+
+				m_y = 200;
+			}
+
+			void Print()
+			{
+				cout << "X:" << m_x << endl;
+				cout << "Y:" << m_y << endl;
+			}
+
+		private:
+			int m_x = 0;
+			int m_y = 0;
+		};
+
+		// 매개변수가 하나인 생성자만 호출한다.
+		CMyPoint ptBegin(110);
+		ptBegin.Print();
+
+		// 이번에는 두 생성자 모두 호출된다.
+		CMyPoint ptEnd(50, 250);
+		ptEnd.Print();
+	}
+	//Getter/Setter 메서드
+	if (0)
+	{
+		// 제작자 코드
+		class CMyData
+		{
+			// 기본 접근 제어 지시자는 'private'이다.
+			int m_nData;
+
+		public:
+			int GetData(void) { return m_nData; }
+			void SetData(int nParam) { m_nData = nParam; }
+		};
+
+		CMyData data;
+		data.SetData(10);
+		cout << data.GetData() << endl;
+	}
+	
+	//상수형 메서드
+	if(0)
+	{
+		class CTest
+		{
+		public:
+			CTest(int nParam) : m_nData(nParam) { };
+			~CTest() { }
+
+			// 상수형 메서드로 선언 및 정의했다.
+			int GetData() const
+			{
+				// 멤버 변수의 값을 읽을 수는 있지만 쓸 수는 없다.
+				return m_nData;
+			}
+
+			int SetData(int nParam) { m_nData = nParam; }
+
+		private:
+			int m_nData = 0;
+		};
+		CTest a(10);
+		cout << a.GetData() << endl;
+	}
+	//상수형 메서드 + mutable
+	if (0)
+	{
+		class CTest
+		{
+		public:
+			CTest(int nParam) : m_nData(nParam) { };
+			~CTest() { }
+
+			// 상수형 메서드로 선언 및 정의했다.
+			int GetData() const
+			{
+				// 상수형 메서드라도 mutable 멤버 변수에는 값을 쓸 수 있다.
+				m_nData = 20;
+				return m_nData;
+			}
+
+			int SetData(int nParam) { m_nData = nParam; }
+
+		private:
+			mutable int m_nData = 0;
+		};
+		CTest a(10);
+		cout << a.GetData() << endl;
+	}
+    return 0;
+}
+
+#endif
