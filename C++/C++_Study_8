@@ -1,0 +1,127 @@
+// Main.cpp
+#include<iostream>
+#include"CMyString.h"
+#include"CMyStringEx.h"
+using namespace std;
+
+//#define ON_MAIN
+#ifdef ON_MAIN 
+
+int main(void)
+{
+	///////////////////////////////////////////
+	//CMyStringEx 사용
+	{
+		CMyStringEx srtTest("I love you"); //생성자에서 넣기.
+		//cout << srtTest.GetString() << endl;
+
+		//return 0;
+
+		srtTest.Append(". Do you?");
+		cout << srtTest.GetString() << endl;
+		
+		return 0;
+
+		int n;
+		n = srtTest.Find("love");
+		cout << n << endl;
+	
+	}
+	return 0;
+
+
+	///////////////////////////////////////////
+	//CMyString 사용
+	/*
+	string name = "kkk";
+	name = name + "만세";
+	cout << name << endl;
+	*/
+	CMyString strData;//디폴트 생성자
+	strData.SetString("최현우");
+	cout << strData.GetString() << endl;
+
+	//1 불필요한 메모리 해결필요.
+	strData.SetString("바보바바");
+	cout << strData.GetString() << endl;
+	
+	//2 깊은복사 해결 필요 (vs. 얕은복사)
+	//CMyString strData2=strData; //복사생성자
+	CMyString strData2(strData);
+	cout << strData2.GetString() << endl;
+	
+	//3. 문자열을 넣어서 만드는 생성자 생성.
+	CMyString strData33("호동");
+	cout << strData33.GetString() << endl;	
+
+	//4.대입연산자
+	//strData33 = CMyString("김연아");
+	//cout << strData33.GetString() << endl;
+
+
+	return 0;
+}
+#endif
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CMyStringEX.cpp
+#define _CRT_SECURE_NO_WARNINGS
+#include"CMyStringEx.h"
+#include<string.h>
+#include<iostream>
+using namespace std;
+
+CMyStringEx::CMyStringEx() {};
+CMyStringEx::CMyStringEx(const char* pszParam) 
+: CMyString::CMyString(pszParam)
+{
+
+	/*this->m_nLength = strlen(pszParam);
+	this->m_pszData = new char[m_nLength + 1];
+	strcpy(this->m_pszData, pszParam);*/
+};
+CMyStringEx::~CMyStringEx() {
+};
+
+
+
+int CMyStringEx::GetLength() const { return m_nLength; };
+
+int CMyStringEx::Append(const char* pszParam) const
+{
+	 
+	char* szTemp = new char[strlen(pszParam) + GetLength() + 1];
+	strcpy(szTemp,"\0");
+	strcat(szTemp, this->m_pszData);
+	strcat(szTemp, pszParam);
+	strcpy(this->m_pszData, szTemp);
+
+	delete[] szTemp;
+	return 0;
+
+};
+
+int CMyStringEx::Find(const char* pszParam) 
+{ 
+	char* ptr = strstr(this->m_pszData, pszParam);
+	if(ptr!=NULL)
+		return 1;
+	else
+		return 0;
+	
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CMyStringEX.h
+#pragma once
+#include"CMyString.h"
+
+class CMyStringEx : public CMyString
+{
+public:
+	CMyStringEx();
+	CMyStringEx(const char* pszParam);
+	~CMyStringEx();
+
+	int GetLength() const;
+	int Append(const char* pszParam) const;
+	int Find(const char* pszParam);
+};
