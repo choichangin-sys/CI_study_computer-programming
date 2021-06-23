@@ -1,0 +1,316 @@
+////////////////////////////////////////
+// CPP수업 1 : 더 나은 C로서의 C++
+////////////////////////////////////////
+
+#include <iostream>
+
+#define ON_MAIN
+#ifdef ON_MAIN
+using namespace std;
+
+void Swap(int& a, int& b)
+{
+	int nTmp = a;
+	a = b;
+	b = nTmp;
+}
+
+int TestFunc(int nParam)
+{
+	int nResult = nParam * 2;
+
+	return nResult;
+}
+
+// 매개변수가 int에 대한 참조 형식이다.
+void TestFuncRef(int& rParam)
+{
+	// 피호출자 함수에서 원본의 값을 변경했다.
+	rParam = 100;
+}
+
+// nParam 매개변수의 디폴트 값은 10이다.
+int TestFunc2(int nParam = 10)
+{
+	return nParam;
+}
+int TestFunc3(int nParam1, int nParam2 = 2)
+{
+	return nParam1 * nParam2;
+}
+
+#define ADD(a, b)((a) + (b))
+
+int Add(int a, int b)
+{
+	return a + b;
+}
+
+inline int AddNew(int a, int b)
+{
+	return a + b;
+}
+
+void Gugudan(void)
+{
+	std::cout << "Global::Gugudan()" << std::endl;
+}
+
+namespace TEST
+{
+	int g_nData = 100;
+
+	void Gugudan(void)
+	{
+		std::cout << "TEST::Gugudan()" << std::endl;
+	}
+}
+
+int Sum(int a, int b, int c)
+{
+	std::cout << "Sum(int, int, int): ";
+
+	return a + b + c;
+}
+
+int Sum(int a, int b)
+{
+	std::cout << "Sum(int, int): ";
+
+	return a + b;
+}
+
+double Sum(double a, double b)
+{
+	std::cout << "Sum(double, double): ";
+
+	return a + b;
+}
+int main()
+{
+	std::cout << "Hello World!\n";
+
+	//cout객체
+	if (1)
+	{
+		std::cout << 10 << std::endl;
+		std::cout << 10U << std::endl;
+		std::cout << 10.5F << std::endl;
+		std::cout << 10.5 << std::endl;
+		std::cout << 3 + 4 << std::endl;
+
+		std::string strData = "Test string";
+		std::cout << "Sample string" << std::endl;
+		std::cout << strData << std::endl;
+
+		strData = "New string";
+		std::cout << strData << std::endl;
+
+		std::cout << "저는 " << 20 << "살 " << "입니다." << std::endl;
+	}
+	//cin객체
+	if (0)
+	{
+		int nAge;
+		std::cout << "나이를 입력하세요." << std::endl;
+		std::cin >> nAge;
+
+		char szJob[32];
+		std::cout << "직업을 입력하세요." << std::endl;
+		std::cin >> szJob;
+
+		std::string strName;
+		std::cout << "이름을 입력하세요." << std::endl;
+		std::cin >> strName;
+
+		std::cout << "당신의 이름은 " << strName << "이고, "
+			<< "나이는 " << nAge << "살이며, "
+			<< "직업은 " << szJob << "입니다." << std::endl;
+	}
+	//auto 예제
+	if (0)
+	{
+		int a = 10;
+		int b(a);
+		auto c(b);
+
+		std::cout << a + b + c << std::endl;
+	}
+	//네임스페이스
+	if (0)
+	{
+		::Gugudan();
+		TEST::Gugudan();
+		std::cout << TEST::g_nData << std::endl;
+
+		// TEST 네임스페이스에 using 선언을 한다.
+		//using namespace TEST;
+		//::Gugudan();
+		//Gugudan();
+	}
+	//Pointer VS Reference
+	if (0)
+	{
+		using namespace std;
+
+		int nData = 10;
+
+		// nData 변수에 대한 참조자 선언
+		int& ref = nData;
+
+		// 참조자의 값을 변경하면 원본도 변경된다!
+		ref = 20;
+		cout << nData << endl;
+
+		// 포인터를 쓰는 것과 비슷하다.
+		int* pnData = &nData;
+		*pnData = 30;
+		cout << nData << endl;
+	}
+	//call by reference
+	if (0)
+	{
+		int nData = 0;
+
+		// 참조에 의한 인수 전달이다.
+		TestFuncRef(nData);
+		cout << nData << endl;
+	}
+	//Reference - SWAP
+	if (0)
+	{
+		int x = 10, y = 20;
+
+		// 참조 전달이며 두 변수의 값이 교환된다.
+		cout << "swap전 x: " << x << endl;
+		cout << "swap전 y: " << y << endl;
+
+		Swap(x, y);
+
+		// 교환된 결과를 출력한다.
+		cout << "swap후 x: " << x << endl;
+		cout << "swap후 y: " << y << endl;
+	}
+	//r-value 참조
+	if (0)
+	{
+		int nInput = 0;
+		cout << "Input number: ";
+		cin >> nInput;
+
+		// 산술 연산으로 만들어진 임시 객체에 대한 r-value 참조
+		int&& rdata = nInput + 5;
+		cout << rdata << endl;
+
+		// 함수 반환으로 만들어진 임시 객체에 대한 r-value 참조
+		int&& result = TestFunc(10);
+
+		// 값을 변경할 수 있다.
+		result += 10;
+		cout << result << endl;
+	}
+	//함수 오버로딩
+	if (0)
+	{
+		std::cout << Sum(3, 4) << std::endl;
+		std::cout << Sum(3, 4, 5) << std::endl;
+		std::cout << Sum(3.3, 4.4) << std::endl;
+	}
+	//디폴트 매개변수
+	if (0)
+	{
+		// 호출자가 실인수를 기술하지 않았으므로 디폴트 값을 적용한다.
+		std::cout << TestFunc2() << std::endl;
+
+		// 호출자가 실인수를 확정했으므로 디폴트 값을 무시한다.
+		std::cout << TestFunc2(20) << std::endl;
+
+		////////////
+		std::cout << TestFunc3(10) << std::endl;
+		std::cout << TestFunc3(10, 5) << std::endl;
+	}
+
+	//동적 메모리1
+	/**/
+		// 인스턴스만 동적으로 생성하는 경우
+		int* pData1 = new int;
+		*pData1 = 5;
+
+		// 초깃값을 기술하는 경우
+		int* pData2 = new int(10);
+
+		std::cout << *pData1 << std::endl;
+		std::cout << *pData2 << std::endl;
+
+		delete pData1;
+		delete pData2;
+	
+	//동적 메모리2 - 배열
+	if (0)
+	{
+		// 객체를 배열 형태로 동적 생성한다.
+		int* arr = new int[5];
+		for (int i = 0; i < 5; ++i)
+			arr[i] = (i + 1) * 10;
+
+		for (int i = 0; i < 5; ++i)
+			cout << arr[i] << endl;
+
+		// 배열 형태로 생성한 대상은 반드시 배열 형태를 통해 삭제한다!
+		delete[] arr;
+	}
+	//문자열
+	if (1)
+	{
+
+	}
+	//범위기반 for문
+	if (0)
+	{
+		int aList[5] = { 10, 20, 30, 40, 50 };
+
+		// 전형적인 C 스타일 반복문
+		for (int i = 0; i < 5; ++i)
+			cout << aList[i] << ' ';
+
+		cout << endl;
+
+		// 범위 기반 C++11 스타일 반복문
+		// 각 요소의 값을 n에 복사한다.
+		for (auto n : aList)
+			cout << n << ' ';
+
+		cout << endl;
+
+		// n은 각 요소에 대한 참조다.
+		for (auto& n : aList)
+			cout << n << ' ';
+
+		cout << endl;
+	}
+	//인라인 함수
+	if (0)
+	{
+		int a, b;
+		printf("더할 두 수를 입력하세요 : ");
+		scanf_s("%d%d", &a, &b);
+
+		printf("ADD(): %d\n", ADD(a, b));
+		printf("Add(): %d\n", Add(a, b));
+		printf("AddNew(): %d\n", AddNew(a, b));
+	}
+	//cout << "CPP수업 1 : 더 나은 C로서의 C++\n";
+	
+}
+
+#endif//ON_MAIN
+// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
+// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
+
+// 시작을 위한 팁: 
+//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
+//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
+//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
+//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
+//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
+//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
