@@ -1,0 +1,3 @@
+﻿  MyCalcDlg.cpp
+LINK : warning LNK4199: /DELAYLOAD:MyMathLib.dll을(를) 무시합니다. MyMathLib.dll에서 가져오기를 찾을 수 없습니다.
+  MyCalc.vcxproj -> C:\Users\pc\source\repos\SYSTEMPROGRAMIMG\MyMath\Debug\MyCalc.exe
