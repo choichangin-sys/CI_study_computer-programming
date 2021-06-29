@@ -1,0 +1,763 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#define DATA_FILE_NAME "c:\\temp\\Addr.dat"
+
+//r : rb
+
+//w : wb
+
+ 
+
+#include <stdio.h>
+
+#include <string.h>
+
+#include <Windows.h>
+
+ 
+
+typedef struct _USERDATA
+
+{
+
+	char strName[32];	  // 이름
+
+	int nAge;			  // 나이
+
+	int nGender;		  // 성별
+
+} USERDATA;
+
+ 
+
+//배열로 처리
+
+#define		MAX_BOOKCOUNT	5
+
+USERDATA	g_AddrBook[MAX_BOOKCOUNT];
+
+int		g_nCount = 0;
+
+ 
+
+//#define myversion
+
+ 
+
+#ifdef myversion
+
+ 
+
+typedef struct SAVE_WITH_USERDATA
+
+{
+
+	USERDATA Save_user;
+
+	int counting;
+
+} SAVE_USERDATA;
+
+ 
+
+SAVE_USERDATA SAVE_User[MAX_BOOKCOUNT];
+
+ 
+
+#endif
+
+ 
+
+void Add();
+
+void Add_address(char* , int , int);
+
+void Search();
+
+void PrintAll();
+
+int CheckName(char* );
+
+void Delete();
+
+int change_array(int );
+
+int LoadData(char* szFileName);
+
+int SaveData(char* szFileName);
+
+ 
+
+int PrintUI()
+
+{
+
+	int nInput = 0;
+
+ 
+
+	system("cls");
+
+	printf("===========================================================================\n");
+
+	printf("전화번호부(Array)\n");
+
+	printf("===========================================================================\n");
+
+	printf("[1] 추가\t [2] 검색\t [3] 전체보기\t   [4] 삭제\t [0] 종료\n");
+
+	printf("===========================================================================\n");
+
+ 
+
+	// 사용자가 선택한 메뉴의 값을 반환한다.
+
+	scanf_s("%d", &nInput);
+
+	getchar();//버퍼에 남은 엔터 제거용
+
+	return nInput;
+
+}
+
+ 
+
+void main()
+
+{
+
+	int nMenu = 0;
+
+	
+
+	LoadData(DATA_FILE_NAME); // 파일에서 읽어오기
+
+ 
+
+	// 메인 이벤트 반복문
+
+	while ((nMenu = PrintUI()) != 0) {
+
+		switch (nMenu) {
+
+		case 1:		  // Add : 이름, 나이, 성별을 입력받아 친구를 추가하는 함수
+
+			Add();
+
+			break;
+
+ 
+
+		case 2:		  // Search : 이름을 입력받아 검색하고, 검색된 결과를 보여주는 함수
+
+			Search();
+
+			break;
+
+ 
+
+		case 3:		 // Print all : 전화부에 들어있는 모든 데이터를 화면에 출력하는 함수
+
+			PrintAll();
+
+			break;
+
+		case 4:		 // Delete : 전화부에 들어있는 데이터를 선택하여 삭제하는 함수
+
+			Delete();
+
+			break;
+
+		}
+
+	}
+
+ 
+
+	SaveData(DATA_FILE_NAME); // 파일에서 저장하기
+
+ 
+
+}
+
+ 
+
+void Add()
+
+{
+
+	//용량초과 체크
+
+	if (g_nCount > MAX_BOOKCOUNT)
+
+	{
+
+		printf("더 이상 친구를 추가할 수 없습니다.");
+
+		return;
+
+	}
+
+	
+
+	char name[32];
+
+	int age;
+
+	int gender;
+
+	printf("이름을 입력하세요. : ");	gets(name);
+
+	printf("나이를 입력하세요. : ");	scanf_s("%d", &age);
+
+	printf("성별을 입력하세요. ( 여자[1] 남자[0] ) : ");	scanf_s("%d", &gender);
+
+	
+
+	// gender value check
+
+	while (1)
+
+	{
+
+		if (gender >= 3 || gender <= -1)
+
+		{
+
+			printf("성별을 다시 입력해주세요. ( 여자[1] 남자[0] ) :  "); scanf_s("%d", &gender);
+
+		}
+
+		else
+
+		{
+
+			break;
+
+		}
+
+	}
+
+	
+
+	int check;
+
+	check = CheckName(name);
+
+ 
+
+	//같은이름체크
+
+	if (check >= 1)
+
+	{
+
+		printf("이미 같은 이름의 친구가 있습니다.\n");
+
+		getch();//for waiting
+
+		return;
+
+	}
+
+ 
+
+	Add_address(name, age, gender);
+
+ 
+
+	g_nCount++;	
+
+}
+
+ 
+
+int CheckName(char name[])
+
+{
+
+	int checkname = 0;
+
+ 
+
+	for (int i = 0; i < MAX_BOOKCOUNT; i++)
+
+	{
+
+		if (strcmp(name, g_AddrBook[i].strName) == 0)
+
+		{
+
+			checkname += 1;
+
+		}
+
+	}
+
+ 
+
+	return checkname;
+
+}
+
+ 
+
+void Add_address(char name[], int age, int gender)
+
+{
+
+	strcpy(g_AddrBook[g_nCount].strName, name);
+
+	g_AddrBook[g_nCount].nAge = age;
+
+	g_AddrBook[g_nCount].nGender = gender;
+
+}
+
+ 
+
+void Search()
+
+{
+
+	if (g_nCount == 0)
+
+	{
+
+		printf("저장된 정보가 없습니다.");
+
+		getch();//for waiting
+
+		return;
+
+	}
+
+ 
+
+	char Name[32];
+
+	printf("누구를 찾으시나요 : ");
+
+	gets(Name);
+
+ 
+
+	int count[MAX_BOOKCOUNT + 1] = { 0 };
+
+	
+
+	for (int i = 0; i < g_nCount; i++)
+
+	{
+
+		if (strcmp(Name, g_AddrBook[i].strName) == 0)
+
+		{
+
+			count[i] += 1;
+
+		}
+
+ 
+
+		count[MAX_BOOKCOUNT] += count[i];
+
+	}
+
+ 
+
+	if (count[MAX_BOOKCOUNT] >= 1)
+
+	{
+
+		for (int i = 0; i < g_nCount; i++)
+
+		{
+
+			if (strcmp(Name, g_AddrBook[i].strName) == 0)
+
+			{
+
+				printf("이름 : %s\t나이 : %d\t성별 : %s\n",
+
+					g_AddrBook[i].strName,
+
+					g_AddrBook[i].nAge,
+
+					g_AddrBook[i].nGender == 0 ? "남성" : "여성");
+
+			}
+
+		}
+
+	}
+
+	else
+
+	{
+
+		printf("저장된 정보가 없습니다.");
+
+		getch();//for waiting
+
+		return;
+
+	}
+
+ 
+
+	getch();//for waiting
+
+}
+
+ 
+
+void PrintAll()
+
+{
+
+	if (g_nCount > 0)
+
+	{
+
+		for (int i = 0; i < g_nCount; i++)
+
+		{
+
+			printf("이름 : %s\t나이 : %d\t성별 : %s\t번호 : %d번\n\n",
+
+				g_AddrBook[i].strName,
+
+				g_AddrBook[i].nAge,
+
+				g_AddrBook[i].nGender == 0 ? "남성" : "여성",
+
+				i + 1);
+
+		}
+
+		getch();//for waiting
+
+		return;
+
+	}
+
+ 
+
+	printf("저장된 정보가 없습니다.");
+
+	getch();//for waiting
+
+}
+
+ 
+
+void Delete()
+
+{
+
+	if (g_nCount <= 0)
+
+	{
+
+		printf("저장된 정보가 없습니다.");
+
+		getch();//for waiting
+
+		return;	
+
+	}
+
+	
+
+	PrintAll();
+
+ 
+
+	int Number;
+
+ 
+
+	printf("누구를 삭제하실건가요? 번호를 입력하세요. : ");
+
+	scanf_s("%d", &Number);
+
+	Number -= 1;
+
+	
+
+	for (int i = 0; i < MAX_BOOKCOUNT; i++)
+
+	{
+
+		if (i == Number)
+
+		{
+
+			g_AddrBook[i].strName[0] = NULL;
+
+			g_AddrBook[i].nAge = 0;
+
+			g_AddrBook[i].nGender = 0;
+
+		}
+
+	}
+
+ 
+
+	for (int i = Number; i < g_nCount - 1; i++)
+
+	{
+
+		strcpy(g_AddrBook[i].strName, g_AddrBook[i + 1].strName);
+
+		g_AddrBook[i].nAge = g_AddrBook[i + 1].nAge;
+
+		g_AddrBook[i].nGender = g_AddrBook[i + 1].nGender;
+
+	}
+
+ 
+
+	g_AddrBook[g_nCount - 1].strName[0] = NULL;
+
+	g_AddrBook[g_nCount - 1].nAge = 0;
+
+	g_AddrBook[g_nCount - 1].nGender = 0;
+
+ 
+
+	g_nCount--;
+
+ 
+
+	printf("삭제가 완료되었습니다.");
+
+ 
+
+	getch();//for waiting
+
+}
+
+ 
+
+#ifdef myversion
+
+ 
+
+int LoadData(char* szFileName)
+
+{
+
+	// g_AddrBook --> szFileName
+
+	//----------------------------
+
+	// 1. 스트림(File) 개방 rb(모드)
+
+	FILE* stream;
+
+	fopen_s(&stream, szFileName, "rb");
+
+ 
+
+	if (stream == NULL)
+
+	{
+
+		return;
+
+	}
+
+ 
+
+	// 2, 스트림에서 읽기.
+
+	for (int i = 0; i < MAX_BOOKCOUNT; i++)
+
+	{
+
+		fread(SAVE_User + i, sizeof(SAVE_USERDATA), 1, stream);
+
+	}
+
+	for (int j = 0; j < MAX_BOOKCOUNT; j++)
+
+	{
+
+		g_AddrBook[j] = SAVE_User[j].Save_user;
+
+	}
+
+	g_nCount = SAVE_User[0].counting;
+
+ 
+
+	// 3. 스트림 폭파
+
+	fclose(stream);
+
+ 
+
+	return 0;
+
+}
+
+ 
+
+ 
+
+int SaveData(char* szFileName)
+
+{
+
+	// g_AddrBook <-- szFileName
+
+	//----------------------------
+
+	// 1. 스트림(File) 개방 wb(모드)
+
+	FILE* stream = NULL;
+
+	fopen_s(&stream, szFileName, "wb");
+
+ 
+
+	for (int j = 0; j < g_nCount; j++)
+
+	{
+
+		SAVE_User[j].Save_user = g_AddrBook[j];
+
+		SAVE_User[j].counting = g_nCount;
+
+	}
+
+ 
+
+	// 2, 스트림에 저장  
+
+	for (int i = 0; i < g_nCount; i++)
+
+	{
+
+		fwrite(SAVE_User + i, sizeof(SAVE_USERDATA), 1, stream);
+
+	}
+
+ 
+
+	// 3. 스트림 폭파
+
+	fclose(stream);
+
+ 
+
+	return 0;
+
+}
+
+ 
+
+#else
+
+ 
+
+int LoadData(char* szFileName)
+
+{
+
+	// g_AddrBook --> szFileName
+
+	//----------------------------
+
+	// 1. 스트림(File) 개방 rb(모드)
+
+	FILE* stream;
+
+	fopen_s(&stream, szFileName, "rb");
+
+ 
+
+	if (stream == NULL)
+
+	{
+
+		return;
+
+	}
+
+ 
+
+	// 2, 스트림에서 읽기.
+
+	fread(&g_nCount, sizeof(int), 1, stream);
+
+	for (int i = 0; i < g_nCount; i++)
+
+	{
+
+		fread(g_AddrBook + i, sizeof(USERDATA), 1, stream);
+
+	}
+
+ 
+
+	// 3. 스트림 폭파
+
+	fclose(stream);
+
+ 
+
+	return 0;
+
+}
+
+ 
+
+ 
+
+int SaveData(char* szFileName)
+
+{
+
+	// g_AddrBook <-- szFileName
+
+	//----------------------------
+
+	// 1. 스트림(File) 개방 wb(모드)
+
+	FILE* stream = NULL;
+
+	fopen_s(&stream, szFileName, "wb");
+
+ 
+
+	// 2, 스트림에 저장 
+
+	fwrite(&g_nCount, sizeof(int), 1, stream);
+
+	for (int i = 0; i < g_nCount; i++)
+
+	{
+
+		fwrite(g_AddrBook + i, sizeof(USERDATA), 1, stream);
+
+	}
+
+ 
+
+	// 3. 스트림 폭파
+
+	fclose(stream);
+
+ 
+
+	return 0;
+
+}
+
+ 
+
+#endif
