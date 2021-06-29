@@ -1,0 +1,275 @@
+#include <stdio.h>
+
+ 
+
+int main()
+
+{
+
+	/*
+
+	int age;
+
+	char name[20];
+
+ 
+
+	printf("나이 입력 : ");
+
+	scanf_s("%d", &age);
+
+ 
+
+	//fflush(stdin); // 입력 버퍼를 비우는 용도
+
+	getchar();
+
+ 
+
+	printf("이름 입력 : ");
+
+	gets(name);
+
+ 
+
+	//printf("나이 입력 : ");
+
+	//scanf_s("%d", &age);
+
+ 
+
+	printf("%d, %s", age, name);
+
+	*/
+
+	// 1. 키보드 -> 모니터
+
+	/*
+
+	char ch = 0;
+
+ 
+
+	while (ch != EOF) // Ctrl + Z (-1)
+
+	{
+
+		ch = getchar(); // 읽기
+
+		//putchar(ch); // 쓰기
+
+	}
+
+	*/
+
+ 
+
+	// 2. 키보드 -> 파일
+
+	/*
+
+	FILE* stream;
+
+	fopen_s(&stream, "C:\\temp\\data.txt", "wt");
+
+ 
+
+	char ch = 0;
+
+ 
+
+	while (ch != EOF) // Ctrl + Z (-1)
+
+	{
+
+		//ch = getchar(); // 읽기
+
+		ch = fgetc(stdin);
+
+ 
+
+		putchar(ch); // 모니터에 쓰기
+
+		fputchar(ch, stdout); // 모니터에 쓰기
+
+		fputc(ch, stream); // 파일에 쓰기
+
+	}
+
+ 
+
+	fclose(stream);
+
+	*/
+
+ 
+
+	// 3. 파일 -> 파일 / 모니터
+
+	/*
+
+	FILE* stream1;
+
+	FILE* stream2;
+
+ 
+
+	char ch = 0;
+
+	int input = 0;
+
+ 
+
+	fopen_s(&stream1, "C:\\temp\\data1.txt", "r");
+
+	fopen_s(&stream2, "C:\\temp\\data2.txt", "w");
+
+ 
+
+	while (ch != EOF) // Ctrl + Z (-1)
+
+	{
+
+		
+
+		input = fgetc(stream1); // 1번 파일에서 읽기
+
+		fputc(input, stream2); // 2번 파일에 쓰기
+
+		fputc(input, stdout); // 모니터에 쓰기
+
+ 
+
+	}
+
+ 
+
+	fclose(stream1);
+
+	fclose(stream2);
+
+	*/
+
+ 
+
+	// 3. 키보드(문자열 1개) -> 파일
+
+	/*
+
+	FILE* stream1;
+
+	FILE* stream2;
+
+ 
+
+	char Buffer[50];
+
+ 
+
+	fopen_s(&stream1, "C:\\temp\\data1.txt", "r");
+
+	fopen_s(&stream2, "C:\\temp\\data2.txt", "w");
+
+ 
+
+	fgets(Buffer, sizeof(Buffer), stdin); // Buffer에 입력한 키보드 문자들을 저장
+
+	fputs(Buffer, stdout); // 입력한 Buffer를 cmd창에 다시 출력
+
+	fputs(Buffer, stream2); // 입력한 Buffer를 data2.txt에 다시 쓰기 및 저장
+
+ 
+
+	fclose(stream1);
+
+	fclose(stream2);
+
+	*/
+
+ 
+
+	// 4. 키보드(문자열 1개) -> 파일
+
+	/*
+
+	FILE* stream;
+
+	
+
+	char name[20];
+
+	int kor, eng, math, total;
+
+	float avg;
+
+	int end = 0;
+
+	fopen_s(&stream, "C:\\temp\\data3.txt", "w");
+
+ 
+
+	while (1)
+
+	{
+
+		printf("이름입력 : \n");
+
+		//scanf_s("%s", name, 20); // 띄어쓰기 있을 시 못 읽음.
+
+		getchar(); // 불필요한 Enter를 소진
+
+		gets(name);
+
+ 
+
+		//puts(name);
+
+ 
+
+		printf("국어점수와 영어점수, 수학점수를 알려주세요.\n");
+
+		fscanf_s(stdin, "%d %d %d", &kor, &eng, &math);
+
+ 
+
+		total = kor + eng + math;
+
+		avg = (float)total / 3;
+
+ 
+
+		fprintf(stdout, "이름 : %s\n점수 : 국어(%d) 영어(%d) 수학(%d) 토탈점수(%d) 평균점수(%.2f)\n", name, kor, eng, math, total, avg);
+
+		fprintf(stream, "이름 : %s\n점수 : 국어(%d) 영어(%d) 수학(%d) 토탈점수(%d) 평균점수(%.2f)\n", name, kor, eng, math, total, avg);
+
+		
+
+		printf("계속 하시고 싶으면 0을 입력하세요.\n");
+
+		scanf_s("%d", &end);
+
+		printf("\n");
+
+ 
+
+		if (end != 0)
+
+		{
+
+			break;
+
+		}
+
+	}
+
+ 
+
+	fclose(stream);
+
+	*/
+
+ 
+
+	return 0;
+
+}
