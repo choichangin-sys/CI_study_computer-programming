@@ -1,0 +1,281 @@
+#include <stdio.h>
+
+ 
+
+int Add(int, int);
+
+int Sub(int, int);
+
+int facto(int);
+
+int facto_self(int);
+
+void count();
+
+void self_service();
+
+ 
+
+// void swap(int, int);
+
+void swap2(int*, int*);
+
+ 
+
+#define max 40
+
+ 
+
+int z;
+
+ 
+
+int main(void)
+
+{
+
+	int aaa = 10, bbb = 20;
+
+	
+
+	//swap(aaa, bbb);
+
+ 
+
+	printf("swap 호출 전 : %d, %d\n", aaa, bbb);
+
+	swap2(&aaa, &bbb);
+
+	printf("swap 호출 후 : %d, %d\n", aaa, bbb);
+
+ 
+
+	return 0;
+
+ 
+
+	// 함수를 가리키는 변수(포인터를) 선언하는 방법
+
+	int (*p1)(int, int) = NULL;
+
+ 
+
+	p1 = Add;
+
+	int ret1 = p1(10, 60);
+
+	printf("%d\n", ret1);
+
+	
+
+	p1 = Sub;
+
+	int ret2 = p1(10, 60);
+
+	printf("%d\n", ret2);
+
+ 
+
+	int (*p2)(int) = NULL;
+
+	p2 = facto_self;
+
+	int ret3 = p2(5);
+
+	printf("%d", ret3);
+
+	
+
+ 
+
+	/*
+
+ 
+
+	int x = facto(5);
+
+	int y = facto_self(5);
+
+	printf("for문 결과 값은 : %d\n", x);
+
+	printf("재귀적 결과 값은 : %d\n", y);
+
+	*/
+
+ 
+
+	//self_service();
+
+ 
+
+	/*
+
+	int a = 10, b =20, c;
+
+ 
+
+	c = Add(a , b);
+
+ 
+
+	printf("%d", c);
+
+	*/
+
+	return 0;
+
+}
+
+ 
+
+int Add(int x, int y)
+
+{
+
+	int sum = x + y;
+
+ 
+
+	return sum;
+
+}
+
+ 
+
+int Sub(int x, int y)
+
+{
+
+	int sum = x - y;
+
+ 
+
+	return sum;
+
+}
+
+ 
+
+void count()
+
+{
+
+	static int ct = 0; // 정적변수
+
+	/*
+
+	지역변수는 한 번 돌고 나면 죽는다.
+
+	하지만 정적변수는 죽지 않고 계속 살아있는다.(전역변수처럼.)
+
+	*/
+
+	ct++;
+
+	printf("불린 횟수 : %d\n", ct);
+
+}
+
+ 
+
+int facto(int x)
+
+{
+
+	int result = 1;
+
+ 
+
+	for (int i = 1; i <= x; i++)
+
+	{
+
+		result *= i;
+
+	}
+
+ 
+
+	return result;
+
+}
+
+ 
+
+void self_service()
+
+{
+
+	printf("self_service\n");
+
+	self_service();
+
+}
+
+ 
+
+int facto_self(int x) // 돌아오는 조건이 필요하다.
+
+{
+
+	if (x <= 1)
+
+	{
+
+		return 1;
+
+	}
+
+	else
+
+	{
+
+		return (x * facto_self(x - 1));
+
+	}
+
+}
+
+/*
+
+void swap(int x, int y)
+
+{
+
+	printf("swap 호출 전 : %d, %d\n", x, y);
+
+ 
+
+	int temp = 0;
+
+ 
+
+	temp = x;
+
+	x = y;
+
+	y = temp;
+
+ 
+
+	printf("swap 호출 후 : %d, %d\n", x, y);
+
+}
+
+*/
+
+void swap2(int* x, int* y) // call by address
+
+{
+
+	int temp = 0;
+
+ 
+
+	temp = *x;
+
+	*x = *y;
+
+	*y = temp;
+
+}
