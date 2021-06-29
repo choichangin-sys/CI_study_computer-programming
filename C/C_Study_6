@@ -1,0 +1,505 @@
+#include <stdio.h>
+
+ 
+
+struct Point
+
+{
+
+	int x;
+
+	int y;
+
+ 
+
+};
+
+ 
+
+typedef struct Rect
+
+{
+
+	int x;
+
+	int y;
+
+	int w;
+
+	int h;
+
+} MY_Rect;
+
+ 
+
+typedef int AGE;
+
+typedef struct Point MY_Point;
+
+ 
+
+#pragma pack(push, 1)/****************/ // 이걸 사용하면 데이터를 1바이트 단위로 하게 할 수 있다.
+
+typedef struct Use_Data
+
+{
+
+	char ch;
+
+	int age;
+
+}Use_Data; 
+
+// 예상 5
+
+// 실제 8
+
+// 5B만 사용하지만 최소 단위인 8B에 맞춰서 만든다.
+
+// 8B, 16B, 32B ..... 이런 식으로 진행된다.
+
+ 
+
+typedef struct My_Data
+
+{
+
+	char ch;
+
+	int age;
+
+	double hight;
+
+}My_Data;
+
+#pragma pack(pop)/*******************/
+
+// 예상 13
+
+// 실제 16
+
+// 5B만 사용하지만 최소 단위인 8B에 맞춰서 만든다.
+
+// 8B, 16B, 32B ..... 이런 식으로 진행된다.
+
+ 
+
+typedef struct My_Score
+
+{
+
+	int kor;
+
+	int eng;
+
+	int math;
+
+	int sum;
+
+ 
+
+	double evg;
+
+}My_Score;
+
+ 
+
+struct student
+
+{
+
+	int no;
+
+	char name[20];
+
+	struct My_Score S;
+
+};
+
+ 
+
+typedef struct Student
+
+{
+
+	int no;
+
+	char name[20];
+
+	struct My_Score S;
+
+}Student;
+
+ 
+
+typedef struct worker
+
+{
+
+	int no;
+
+	char name[20];
+
+ 
+
+	struct worker* pLink;
+
+	//struct worker* pLink_Prev;
+
+	//struct worker* pLink_Next;
+
+	
+
+}Worker;
+
+ 
+
+union shape
+
+{
+
+	int x;
+
+	int y;
+
+};
+
+ 
+
+union differ
+
+{
+
+	char a;
+
+	int b;
+
+	double c;
+
+};
+
+ 
+
+int main()
+
+{
+
+	
+
+	// 열거형----------------------------------------------------------------------------------------------------------------
+
+	enum season // 숫자로 매핑하는 것.
+
+	{
+
+		SPRING, SUMMER, FALL, WINTER
+
+	};
+
+	enum week
+
+	{
+
+		SUN, MON, TUE, WED = 5, THU = 4, FRI, SAT
+
+	}; // 원래 WED는 3이지만 5로 바꿀 수 있다. 또한 THU는 4로 바꿔도 Error는 발생하지 않고 FRI가 5로 시작된다.
+
+ 
+
+	int mybirth = SPRING;
+
+	int today = FRI;
+
+ 
+
+	printf("내 생일은 %d, %d\n\n", mybirth, today);
+
+ 
+
+	// 공용체----------------------------------------------------------------------------------------------------------------
+
+	{
+
+		// 메모리는 가장 큰 자료형을 기준으로 만들어진다.
+
+		union shape test;
+
+		test.x = 10;
+
+		printf("union %d, %d\n", test.x, test.y);
+
+ 
+
+		test.y = 20;
+
+		printf("union %d, %d\n", test.x, test.y);
+
+ 
+
+		printf("union size %d\n", sizeof(test));
+
+ 
+
+		union differ test2;
+
+		printf("%d\n", sizeof(union differ));
+
+		printf("%d\n", sizeof(test2));
+
+ 
+
+		return 0;
+
+	}
+
+ 
+
+	// 구조체의 자기참조 포인터------------------------------------------------------------------------------------------------
+
+	{
+
+		Worker a = { 1, "홍길동", NULL };
+
+		Worker b = { 2, "김수환무", NULL };
+
+		Worker c = { 3, "강호동", NULL };
+
+		Worker d = { 4, "유재석", NULL };
+
+		Worker e = { 5, "하하", NULL };
+
+ 
+
+		a.pLink = &b;
+
+		b.pLink = &c;
+
+		c.pLink = &d;
+
+		d.pLink = &e;
+
+ 
+
+		Worker* pHeap = &a;
+
+ 
+
+		//for (int i = 0; i < 3; i++)
+
+		while (pHeap != NULL)
+
+		{
+
+			printf("[%p]%d, %s[%p]\n",
+
+				pHeap,
+
+				pHeap->no,
+
+				pHeap->name,
+
+				pHeap->pLink);
+
+ 
+
+			pHeap = pHeap->pLink;
+
+		}
+
+ 
+
+		// 위와 같은 형태를 Linked List
+
+		// 배열은 동형의 자료, 돈이 많이 들어가는 구조이다.
+
+		// 추가 및 삭제에서 비효율적인 구조가 생긴다.
+
+		// Max값에 관하여 문제점이 생긴다.
+
+	}
+
+	return 0;
+
+	
+
+	// 구조체의 포인터--------------------------------------------------------------------------------------------------------
+
+	{
+
+		Student sohn = { 10, "손세정", {90, 80, 70} };
+
+		Student* pStu = NULL;
+
+ 
+
+		//pStu = sohn; // Error
+
+		pStu = &sohn;
+
+ 
+
+		pStu->S.sum = pStu->S.kor + pStu->S.eng + pStu->S.math;
+
+		pStu->S.evg = pStu->S.sum / 3;
+
+		printf("%d번 학생, 이름 : %s\n국 : %d, 영 : %d, 수 : %d, 총점 : %d, 평균 : %f\n",
+
+			pStu->no, pStu->name, pStu->S.kor,
+
+			pStu->S.eng, pStu->S.math,
+
+			pStu->S.sum, pStu->S.evg);
+
+ 
+
+	}
+
+	return 0;
+
+ 
+
+	// 중첩 구조체----------------------------------------------------------------------------------------------------------
+
+ 
+
+	struct student sohn = { 10, "손세정", {100, 99, 98} };
+
+ 
+
+ 
+
+	sohn.S.sum = sohn.S.kor + sohn.S.eng + sohn.S.math;
+
+	sohn.S.evg = sohn.S.sum / 3;
+
+	printf("%d번 학생, 이름 : %s\n국 : %d, 영 : %d, 수 : %d, 총점 : %d, 평균 : %f\n",
+
+		sohn.no, sohn.name, sohn.S.kor, 
+
+		sohn.S.eng, sohn.S.math,
+
+		sohn.S.sum, sohn.S.evg);
+
+	
+
+ 
+
+	return 0;
+
+	
+
+	// 구조체의 배열---------------------------------------------------------------------------------------------------------
+
+	AGE kim = 45;
+
+	AGE LEE = 33;
+
+ 
+
+	int a = 100;
+
+	a = 10;
+
+ 
+
+	struct Point pt1 = { 10, 20 };
+
+	struct Point pt2;
+
+	MY_Point pt3= { 111, 222 };
+
+ 
+
+	pt2.x = 100;
+
+	pt2.y = 200;
+
+ 
+
+	printf("pt1 : %d, pt2 : %d\n", pt1.x, pt2.x);
+
+	printf("pt1 : %d, pt2 : %d\n", pt1.y, pt2.y);
+
+ 
+
+	struct Rect rect1 = { 10, 20, 30, 40 };
+
+	printf("%d, %d, %d, %d\n", rect1.x, rect1.y, rect1.w, rect1.h);
+
+ 
+
+	printf("MY_Point 구조체 Size : %d\n", sizeof(MY_Point));
+
+	printf("MY_Rect 구조체 Size : %d\n", sizeof(MY_Rect));
+
+	printf("Use_Data 구조체 Size : %d\n", sizeof(Use_Data));
+
+	printf("My_Data 구조체 Size : %d\n", sizeof(My_Data));
+
+ 
+
+	My_Score Kim = { 100, 20, 70 };
+
+	My_Score lee = { 100, 20, 70 };
+
+	My_Score hong = { 100, 20, 70 };
+
+ 
+
+	My_Score MyClass[5] =
+
+	{
+
+		{100, 90, 80},
+
+		{95, 80, 70},
+
+		{80, 70, 60},
+
+		{75, 60, 50},
+
+		{60, 50, 40}
+
+	};
+
+ 
+
+	for (int i = 0; i < 5; i++)
+
+	{
+
+		MyClass[i].sum = MyClass[i].kor + MyClass[i].eng + MyClass[i].math;
+
+		MyClass[i].evg = (double)MyClass[i].sum / 3; // int를 => double로 자료형을 변환시켜 소수점이 나오게 변환.
+
+		
+
+		printf("국 : %d, 영 : %d, 수 : %d, 총점 : %d, 평균 : %f\n",
+
+			MyClass[i].kor, MyClass[i].eng, MyClass[i].math,
+
+			MyClass[i].sum, MyClass[i].evg);
+
+	}
+
+ 
+
+	/*
+
+	Kim.sum = Kim.kor + Kim.eng + Kim.math;
+
+	Kim.evg = Kim.sum / 3;
+
+	printf("국 : %d, 영 : %d, 수 : %d, 총점 : %d, 평균 : %f\n",
+
+		Kim.kor, Kim.eng, Kim.math, 
+
+		Kim.sum, Kim.evg);
+
+	*/
+
+ 
+
+	return 0;
+
+}
