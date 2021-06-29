@@ -1,0 +1,203 @@
+#include <stdio.h>
+
+ 
+
+//////////////////////////////////
+
+// 시험에 나올 가능성 농후      
+
+// 배열의 이름은 배열의 시작 주소 
+
+// *과 &가 같이 있으면 상쇄  
+
+/////////////////////////////////
+
+int main()
+
+{
+
+	int a = 0;
+
+ 
+
+	int* b;
+
+	b = &a;
+
+ 
+
+	//printf("%d %d %p %d\n\n\n", &b, b, *b, &a);
+
+ 
+
+ 
+
+ 
+
+	int aList[4][5] = {
+
+		{10, 20, 30 ,40},
+
+		{50, 60, 70, 80},
+
+		{90, 100, 110, 120}
+
+	};
+
+ 
+
+	for (int i = 0; i < 4; i++)
+
+	{
+
+		for (int j = 0; j < 5; j++)
+
+		{
+
+			if (j < 4)
+
+			{
+
+				aList[i][4] += aList[i][j];
+
+ 
+
+				if (i < 3)
+
+				{
+
+					aList[3][j] += aList[i][j];
+
+				}
+
+			}
+
+ 
+
+			printf("%d	", aList[i][j]);
+
+		}
+
+		printf("\n");
+
+	}
+
+ 
+
+	printf("\n");
+
+ 
+
+	int arrGrade[2][3] = {1, 2, 3, 4, 5, 6};
+
+	/*
+
+	1 2 3
+
+	4 5 6
+
+	이런 형태이다. [행][열]
+
+	*/
+
+	printf("주소1 : %d\n", arrGrade);
+
+	printf("주소2 : %d\n", arrGrade[0]);
+
+	printf("주소2 : %d\n", arrGrade[0][1]); // 2
+
+	printf("주소2 : %d\n", *(arrGrade[0] + 1)); // 2
+
+	printf("주소2 : %d\n", *(*(arrGrade + 0) + 1)); // 2
+
+	printf("주소3 : %d\n", arrGrade[1]);
+
+	printf("주소3 : %d\n", arrGrade[1][1]); // 5
+
+	printf("주소3 : %d\n", *(arrGrade[1] + 1)); // 2
+
+	printf("주소3 : %d\n", *(*(arrGrade + 1) + 1)); // 5
+
+ 
+
+	int arnumbers[] = { 10, 20, 32, 5, 6, -1, 10 };
+
+	int max = arnumbers[0];
+
+	int min = *arnumbers;
+
+ 
+
+	for (int i = 1; i < sizeof(arnumbers) / sizeof(int); i++) // 전체 사이즈에서 1개 사이즈로 나누면 개수가 나옴.
+
+	{
+
+		if (min > *(arnumbers + i))
+
+		{
+
+			min = *(arnumbers + i);
+
+		}
+
+		else if (max < arnumbers[i])
+
+		{
+
+			max = arnumbers[i];
+
+		}
+
+	}
+
+ 
+
+	printf("Max : %d, Min : %d\n", max, min);
+
+	printf("\n\n\n");
+
+ 
+
+	int arr[3] = { 1,2,3 };
+
+	char latter[3] = {'a', 'b', 'c'};
+
+ 
+
+	printf("%d %d %d \n", arr[0], arr[1], arr[2]);
+
+	printf("%d %d %d \n", *arr, *(arr + 1), *(arr + 2));
+
+	for (int i = 0; i < 3; i++)
+
+	{
+
+		printf("%d ", &arr[i]);
+
+	}
+
+	printf("\n%d %d %d \n", arr, arr + 1, arr + 2);
+
+ 
+
+ 
+
+	printf("%d %d %d \n", latter[0], latter[1], latter[2]);
+
+	printf("%d %d %d \n", *latter, *(latter + 1), *(latter + 2));
+
+	for (int i = 0; i < 3; i++)
+
+	{
+
+		printf("%d ", &latter[i]);
+
+	}
+
+	printf("\n%d %d %d \n", latter, latter + 1, latter + 2);
+
+ 
+
+	return 0;
+
+}
