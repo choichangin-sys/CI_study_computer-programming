@@ -17,4 +17,6 @@ Linux는 VMware을 이용하여 1개의 컴퓨터로 4개의 가상 컴퓨터를
 
 => C | C++ | WindowProject | MFC | SystemPrograming은 Visual Studio 2019를 사용하여 코딩했음.
 
-=> 이수한 과목 | C | C++ | WindowsProject | MFC | SystemPrograming
+=> Python은 Python 3.8 Version과 PyCham 2021.1.2 Version을 사용하여 코딩했음.
+
+=> 이수한 과목 | C | C++ | WindowsProject | MFC | SystemPrograming | DBMS | Python
