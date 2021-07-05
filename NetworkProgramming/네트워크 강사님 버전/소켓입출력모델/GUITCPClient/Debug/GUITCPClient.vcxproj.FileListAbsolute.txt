@@ -1,0 +1,2 @@
+C:\Users\BIT\Desktop\winsock\소켓입출력모델\GUITCPClient\Debug\GUITCPClient.exe
+C:\Users\pc\Desktop\네트워크 강사님 버전\소켓입출력모델\GUITCPClient\Debug\GUITCPClient.exe

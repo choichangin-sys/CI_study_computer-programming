@@ -1,0 +1,12 @@
+// 에디트 컨트롤에 문자열 출력
+void DisplayText(char *fmt, ...)
+{
+	va_list arg;			va_start(arg, fmt);
+	
+	char cbuf[BUFSIZE+256];	vsprintf(cbuf, fmt, arg);
+	
+	int nLength = GetWindowTextLength(hEdit2);
+	SendMessage(hEdit2, EM_SETSEL, nLength, nLength);
+	SendMessage(hEdit2, EM_REPLACESEL, FALSE, (LPARAM)cbuf);
+	va_end(arg);
+}

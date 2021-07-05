@@ -1,0 +1,10 @@
+﻿cl : 명령줄 warning D9035: 'Gm' 옵션은 더 이상 사용되지 않으므로 이후 릴리스에서 제거될 예정입니다.
+  a.cpp
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(34,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(39,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(43,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(47,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(51,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\a.cpp(68,23): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+a.obj : warning LNK4075: '/EDITANDCONTINUE'이(가) '/SAFESEH' 사양으로 인해 무시됩니다.
+  UDPServer.vcxproj -> C:\Users\pc\Desktop\네트워크 강사님 버전\UDP\3_멀티캐스트\3_UDPServer\Debug\UDPServer.exe

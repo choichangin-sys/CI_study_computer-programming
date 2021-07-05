@@ -1,0 +1,37 @@
+1. 사용자 메시지 정의(pch. h)
+   // 여기에 미리 컴파일하려는 헤더 추가
+   #include "framework.h"
+   #define EVENT_SENDMESSAGE WM_USER + 1
+   #endif //PCH_H
+
+2. 핸들러 함수 선언
+   //사용자 정의 메시지 핸들러
+  afx_msg LRESULT OnMyMessage(WPARAM wParam, LPARAM lParam);
+
+3. 핸들러 함수 구현
+   LRESULT CChatDlg::OnMyMessage(WPARAM wParam, LPARAM lParam)
+   {
+       return 0;
+   }
+
+4. 메시지 등록
+   BEGIN_MESSAGE_MAP(CChatDlg, CDialogEx)
+	ON_MESSAGE(EVENT_SENDMESSAGE, &CChatDlg::OnMyMessage)
+   END_MESSAGE_MAP()
+
+
+5. 호출(SendMessage / PostMessage)
+    g_pDlg->PostMessage(EVENT_SENDMESSAGE, 0, 0);	
+
+------------------------------------------------------------------------------------------------------------------------------
+* g_pDlg; //전역변수로 선언 / 생성자에서 초기화
+CChatDlg* g_pDlg = NULL;				//<==================1
+
+CChatDlg::CChatDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_CHAT_DIALOG, pParent)
+	, m_strshortmessage(_T(""))
+{
+	g_pDlg = this;						//<==================2
+}
+
+

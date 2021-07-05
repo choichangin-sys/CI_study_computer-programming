@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{D84C908E-E3CB-4DBD-B34B-91FBA4215970}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "브로드캐스팅", "브로드캐스팅.vcxproj", "{15543C98-92AA-4005-8CE5-96D5DE1ACB42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Template|x86 = Template|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Debug|x86.ActiveCfg = Debug|Win32
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Debug|x86.Build.0 = Debug|Win32
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Release|x86.ActiveCfg = Release|Win32
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Release|x86.Build.0 = Release|Win32
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Template|x86.ActiveCfg = Debug|Win32
+		{D84C908E-E3CB-4DBD-B34B-91FBA4215970}.Template|x86.Build.0 = Debug|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Debug|x86.ActiveCfg = Debug|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Debug|x86.Build.0 = Debug|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Release|x86.ActiveCfg = Release|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Release|x86.Build.0 = Release|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Template|x86.ActiveCfg = Template|Win32
+		{15543C98-92AA-4005-8CE5-96D5DE1ACB42}.Template|x86.Build.0 = Template|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74C8BA5A-C38D-434D-ABA8-C9A6CC08C7D8}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31229.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{85676DA4-1DE0-4799-A26C-183BC542502C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "유니캐스트", "유니캐스트.vcxproj", "{81889148-C39F-4C89-BB8E-3C0174275B82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Template|x86 = Template|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Debug|x86.ActiveCfg = Debug|Win32
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Debug|x86.Build.0 = Debug|Win32
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Release|x86.ActiveCfg = Release|Win32
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Release|x86.Build.0 = Release|Win32
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Template|x86.ActiveCfg = Debug|Win32
+		{85676DA4-1DE0-4799-A26C-183BC542502C}.Template|x86.Build.0 = Debug|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Debug|x86.ActiveCfg = Debug|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Debug|x86.Build.0 = Debug|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Release|x86.ActiveCfg = Release|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Release|x86.Build.0 = Release|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Template|x86.ActiveCfg = Template|Win32
+		{81889148-C39F-4C89-BB8E-3C0174275B82}.Template|x86.Build.0 = Template|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5DB3CEEB-4D8B-42CB-8625-59737327C86A}
+	EndGlobalSection
+EndGlobal

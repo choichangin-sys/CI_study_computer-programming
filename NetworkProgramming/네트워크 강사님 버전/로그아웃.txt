@@ -1,0 +1,35 @@
+[로그아웃]
+
+* 클라이언트*
+1) 로그아웃의 시작점!
+    채팅창이 종료될 때!
+    방법1) 채팅창이 종료될때 이벤트핸들러
+    방법2) Control::RecvData       <-------------- 선택!!!
+              dlg.DoModal() 이후!!!
+
+    - 정보 생성 Control에 전달(id전달)
+
+2)  Control::LogOutMember(const char* id) 
+     기존코드를 참조에서 구현!!!
+     - 패킷 생성
+     - 전송
+
+3) 패킷 정의코드 (packet.h)
+    #define PACK_LOGOUT	3     : ID
+
+    #define PACK_LOGOUT_S  15   : echo
+    #define PACK_LOGOUT_F  16   : echo
+
+     struct PACKETLOGOUT
+     {
+            int flag;
+            char id[10];
+     };
+
+    
+
+
+
+
+   
+
