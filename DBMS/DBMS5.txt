@@ -1,0 +1,232 @@
+* Merge(병합)
+- 한 번의 조건으로 데이터 입력 또는 변경 또는 삭제를 가능하게 하는 명령
+- 형식
+merge into table_name 		// 데이터 변경이 발생할 테이블명
+	using table_name on(조건)	// 비교대상 테이블명(조건-키)
+	when matched then 
+		update set ~
+	when not matched then
+		insert [(컬럼,...)] values~;
+
+create table sawon_20 as select * from sawon where deptno=20;
+
+- sawon_20 table에 사원이 존재하면(sawon과 비교) 급여를 10% 인상하고, 존재하지 않으면 사원정보를 입력하는 병합을 작성
+merge into sawon_20 s1 			
+	using sawon s on (s.sabun=s1.sabun) 	
+	when matched then
+		update set sapay=sapay*1.1
+	when not matched then
+		insert values(s.sabun, s.saname, s.deptno, s.sajob, s.sapay, s.sahire, s.sasex, s.samgr);
+
+* TCL
+-- 트랜젝션(DML) 제어(관리) 명령, 데이터 흐름 제어문
+-- commit(저장), rollback(취소), savepoint(저장점)
+
+* DBMS에서 사용되는 객체
+1. 시퀀스 : 규칙적인 순서번호를 갖는 객체, 데이터 입력(insert)시 자동으로 입력되도록 사용
+
+create sequence gogek_no_seq
+increment by 10	// 증가치
+start with 201	// 초기치
+maxvalue 9999;	// 최대치
+[nocycle]		// 기본값
+
+--적용(사용-insert명령)
+SQL> insert into gogek(gobun, goname) values(gogek_no_seq.nextval, '홍동우');  // [시퀀스명.nextval]
+
+1 개의 행이 만들어졌습니다.
+
+SQL> insert into gogek(gobun, goname) values(gogek_no_seq.nextval, '홍다은'); // 입력시 실패하더라도 카운트 증가함(무의미)
+
+1 개의 행이 만들어졌습니다.
+
+--현재 시퀀스의 카운트 정보 확인
+SQL> select gogek_no_seq.currval from dual;
+
+   CURRVAL
+----------
+       211
+
+2. 뷰 : 가상 테이블(하드 디스크에 물리적으로 저장되지 않음)
+
+1) 데이터 사전 뷰(data dictionary view) : 오라클에서 필요한 모든 정보를 가진 객체(select 명령으로 사용)
+- 정적뷰
+all_  : 객체(types) 의 요약된 정보 (모든네션)
+user_ : 현재 세션의 자세한 정보 (현재 세션)
+dba_  : 모든 세션의 자세한 정보 (DBA) - 관리자만 볼 수 있음
+
+select table_name, constraint_name, constraint_type from user_constraints;
+** user_type_colums
+          cons
+          ind
+- 동적 성능뷰 : V$로 시작 (DBA) - 관리자만 볼 수 있음
+desc v$session
+desc v$database
+
+2) 사용자정의 뷰(보안객체) : create view 권한 필요!!
+--형식 : create view view_name(컬럼명,...) as select ~~;
+
+- 가상 테이블 개념(디스크에 데이터 저장되지 않는다 -> user_objects에 존재하지 않음)
+- 정보 뷰 : user_views
+- 반드시 원본(기본) 테이블로 부터 생성 rksmd
+- 기본적으로 DML가능(집계된 결과 또는 컬럼이 조작된 경우, 연산작업이 된 경우의 수정 불가)
+- 옵션 with read only을 사용하면 읽기전용 뷰 생성
+
+- 목적
+	1. 복잡한 쿼리를 단순하게 사용(수십, 수백 라인의 쿼리문은 간단하게 쿼리 - 성능과는 무관)
+	2. 제한된 엑세스를 구현->보여주고 싶은 정보를 가진 뷰 생성(보안객체)
+
+3. 인덱스 : 컬럼에 생성, 검색성능을 향상시키는 객체 <-> full table scan(가장 안좋은 검색) : 1 extent(저장단위=적은수의 데이터)이하에 적합
+-- where절에서 자주 사용되는 컬럼에 생성(복합 인덱스인 경우 사용 순서대로 생성)
+-- PK or UQ 제약조건은 기본값으로 생성
+-- 정적 데이터(DML이 자주 발생하지 않는 컬럼) 컬럼에 생성 - 데이터가 변경되면 인덱스를 재구성하므로
+-- 정보 뷰 : user_indexes /  user_ind_columns
+
+SQL> select index_name, index_type, table_name from user_indexes;
+
+INDEX_NAME                     INDEX_TYPE                  TABLE_NAME
+------------------------------ --------------------------- ---------------------
+STUDENT_HAKBUN_PK              NORMAL                      STUDENT
+STUDENT_JUMIN_UQ               NORMAL                      STUDENT
+SAWON_SABUN_PK                 NORMAL                      SAWON
+GOGEK_GOBUN_PK                 NORMAL                      GOGEK
+GOGEK_GOJUMIN_UQ               NORMAL                      GOGEK
+DEPT_DEPTNO_PK                 NORMAL                      DEPT
+DEPT_DNAME_UQ                  NORMAL                      DEPT
+
+7 개의 행이 선택되었습니다.
+
+SQL> select index_name, column_name, table_name from user_ind_columns;
+
+INDEX_NAME                     COLUMN_NAME                    TABLE_NAME
+------------------------------ ------------------------------ ------------------
+DEPT_DEPTNO_PK                 DEPTNO                         DEPT
+DEPT_DNAME_UQ                  DNAME                          DEPT
+GOGEK_GOBUN_PK                 GOBUN                          GOGEK
+GOGEK_GOJUMIN_UQ               GOJUMIN                        GOGEK
+SAWON_SABUN_PK                 SABUN                          SAWON
+STUDENT_HAKBUN_PK              HAKBUN                         STUDENT
+STUDENT_JUMIN_UQ               JUMIN                          STUDENT
+
+-- 문법
+SQL> create index i_sawon_sabun on sawon(sabun);	// b*tree(normal)
+
+SQL> create bitmap index i_sawon_sasex on sawon(sasex);// bitmap
+
+SQL> create index i_sawon_sapay on sawon(sapay*0.1);	// function-based
+
+SQL> create index i_sawon_samgr on sawon(samgr) reverse;// reverse-key
+
+SQL> create index i_sawon_deptno on sawon(deptno desc);
+
+SQL> select table_name, index_name, index_type from user_indexes;
+
+TABLE_NAME                     INDEX_NAME                     INDEX_TYPE
+------------------------------ ------------------------------ ---------------------------
+STUDENT                        STUDENT_HAKBUN_PK              NORMAL
+STUDENT                        STUDENT_JUMIN_UQ               NORMAL
+SAWON                          SAWON_SABUN_PK                 NORMAL
+SAWON                          I_SAWON_SASEX                  BITMAP				//
+SAWON                          I_SAWON_SAPAY                  FUNCTION-BASED NORMAL		
+SAWON                          I_SAWON_SAMGR                  NORMAL/REV
+SAWON                          I_SAWON_DEPTNO                 FUNCTION-BASED NORMAL
+GOGEK                          GOGEK_GOBUN_PK                 NORMAL
+GOGEK                          GOGEK_GOJUMIN_UQ               NORMAL
+DEPT                           DEPT_DEPTNO_PK                 NORMAL
+DEPT                           DEPT_DNAME_UQ                  NORMAL
+
+11 개의 행이 선택되었습니다.
+
+SQL> select table_name, index_name, column_name from user_ind_columns;
+
+TABLE_NAME                     INDEX_NAME                     COLUMN_NAME
+------------------------------ ------------------------------ ------------------------------
+DEPT                           DEPT_DEPTNO_PK                 DEPTNO
+DEPT                           DEPT_DNAME_UQ                  DNAME
+GOGEK                          GOGEK_GOBUN_PK                 GOBUN
+GOGEK                          GOGEK_GOJUMIN_UQ               GOJUMIN
+SAWON                          I_SAWON_DEPTNO                 SYS_NC00010$	//
+SAWON                          I_SAWON_SAMGR                  SAMGR
+SAWON                          I_SAWON_SAPAY                  SYS_NC00009$
+SAWON                          I_SAWON_SASEX                  SASEX
+SAWON                          SAWON_SABUN_PK                 SABUN
+STUDENT                        STUDENT_HAKBUN_PK              HAKBUN
+STUDENT                        STUDENT_JUMIN_UQ               JUMIN
+
+11 개의 행이 선택되었습니다.
+
+// 인덱스 생성되었음에도 인덱스를 사용하지 않는 경우***
+-- 인덱스가 생성된 컬럼이 조작되어 사용된 경우(수식, 함수....)
+-- 인덱스가 생성된 컬럼의 순서대로 사용하지 않은 경우(두 개 이상의 컬럼에 인덱스 생성)
+-- is null, like 연산자를 사용한 경우
+
+* DCL명령
+--데이터 관리(제어, 관리) 명령, 권한 관련 명령
+--grant(부여), revoke(회수)
+
+- 권한종류 : privilege & role(관련 privilege 집합)
+1) System privilege : 오라클에서 사용 가능한 명령 권한(create session, create table, create user, ...)
+		  부여 : DBA, 상속절 : with admin option(회수시 개별회수)
+
+2) Object privilege : 특정 객체의 액세스 권한(select, insert, delete, update, execute on 객체명)
+		 부여 : 소유자(owner), 상속절 : with grant option(회수시 일괄회수)
+
+- 형식
+grant   권한,... [on 객체명]    to [세션|롤],... [with admin|grant option]; - 객체명은 1개만 쓸 수 있음
+revoke 권한,... [on 객체명] from [세션|롤],...;
+
+-[참고] 엑세스 권한이 없는 객체에 접근하려고 시도하면, [해당 객체가 존재하지 않는다]는 메세지가,
+          시스템 권한이 없는 명령을 사용하려고 시도하면, [권한이 불충분하다]는 메세지가 출력
+
+4. Role(보안객체)
+--관련 privilege들의 집합
+--create role권한 필요
+
+--관리방법 : 롤을 통해 세션에 권한 부여하고, 권한의 관리는 롤을 통해서만 한다.
+	1) 롤 생성
+	2) 롤에 관련 권한들을 부여
+	3) 롤을 세션에게 부여
+
+--시스템 롤 정보(connect, resource, dba, sysdata,...)
+SQL> conn /as sysdba
+연결되었습니다.
+SQL> select grantee, privilege from dba_sys_privs
+  2  where grantee='CONNECT' or grantee='RESOURCE'  --***
+  3  order by 1;
+
+GRANTEE                        PRIVILEGE
+------------------------------ ------------------------
+CONNECT                        CREATE SESSION
+RESOURCE                       CREATE CLUSTER
+RESOURCE                       CREATE INDEXTYPE
+RESOURCE                       CREATE OPERATOR
+RESOURCE                       CREATE PROCEDURE
+RESOURCE                       CREATE SEQUENCE
+RESOURCE                       CREATE TABLE
+RESOURCE                       CREATE TRIGGER
+RESOURCE                       CREATE TYPE
+
+9 개의 행이 선택되었습니다.
+
+5. Synonym(동의어) : 보안객체
+--특정 세션에세 테이블명과 소유자를 숨기고, [공용]이름으로 엑세스하도록 할 때 사용하는 객체
+
+--형식 : create public synonym s_name for 세션.객체명;
+                   --------
+SQL> show user
+USER은 "SYS"입니다
+SQL> create public synonym s for sky.sawon;	// [sky.sawon = s]
+
+동의어가 생성되었습니다.
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,289 @@
+* 테이블 생성
+--생성
+SQL> create table test(id number(10), name varchar2(20), addr varchar2(30));
+
+테이블이 생성되었습니다.
+
+SQL> desc test
+ 이름                                      널?      유형
+ ----------------------------------------- -------- ----------------------------
+ ID                                                 NUMBER(10)
+ NAME                                               VARCHAR2(20)
+ ADDR                                               VARCHAR2(30)
+
+--변경
+SQL> alter table test
+  2  add sex char(4);		// 컬럼 추가
+
+테이블이 변경되었습니다.
+
+SQL> alter table test
+  2  modify addr varchar2(50);	// 컬럼 변경
+
+테이블이 변경되었습니다.
+
+SQL> alter table test
+  2  drop column sex;		// 컬럼 삭제(column키워드)
+
+테이블이 변경되었습니다.
+
+--삭제
+SQL> drop table test;
+
+테이블이 삭제되었습니다.
+
+* Constraint(제약조건)
+1. 컬럼 단위
+-- 학생 테이블 
+create table student
+(hakbun number(9) constraint student_hakbun_pk primary key,
+ sname  varchar(2) constraint student_sname_nn not null,
+ addr     varchar2(30) default '서울',
+ age      number(3) constraint student_age_ck check(age<=30),
+ jumin   varchar2(14) constraint student_jumin_uq unique);
+---------------------------------------------
+--jumin에 not null 추가 또는 삭제
+alter table student
+modify jumin [constraint student_jumin_nn not null | null];
+
+--not null을 제외한 모든 제약
+alter table student
+-add constraint student_jumin_uq unique(jumin);	// 제약추가
+-drop constraint student_jumin_uq		// 제약삭제
+---------------------------------------------
+-- 도서대출 테이블
+create table library
+(sno number(9) constraint lib_sno_fk references student(hakbun) [on delete cascade],
+ book varchar2(20) not null,
+ loan_date date default sysdate);
+
+2. 테이블 단위
+create table student
+(hakbun number(9),
+ sname  varchar(2) constraint student_sname_nn not null,
+ addr     varchar2(30) default '서울',
+ age      number(3),
+ jumin   varchar2(14) constraint student_jumin_nn not null,
+ constraint student_hakbun_pk primary key(hakbun),
+ constraint student_age_ck check(age<=30),
+ constraint student_jumin_uq unique(jumin));
+
+create table library
+(sno number(9),
+ book varchar2(20) not null,
+ loan_date date default sysdate,
+ constraint lib_sno_fk foreign key(sno) references student(hakbun));
+
+* 단일행 함수
+1. 수학 함수
+SQL> select sin(10), cos(10), tan(10), log(10,2), power(3,5) from dual;
+
+   SIN(10)    COS(10)    TAN(10)  LOG(10,2) POWER(3,5)
+---------- ---------- ---------- ---------- ----------
+-.54402111 -.83907153 .648360827 .301029996        243
+
+--반올림 관련 함수 ***
+SQL> select round(254.1638, 2), round(254.1638, -2), round(254.1638, 0) from dual;
+
+ROUND(254.1638,2) ROUND(254.1638,-2) ROUND(254.1638,0)
+----------------- ------------------ -----------------
+           254.16                300               254
+
+SQL> select trunc(254.1638, 2), trunc(254.1638, -2), trunc(254.1638, 0) from dual;
+
+TRUNC(254.1638,2) TRUNC(254.1638,-2) TRUNC(254.1638,0)
+----------------- ------------------ -----------------
+           254.16                200               254
+
+SQL> select floor(10.99), ceil(10.1) from dual;
+
+FLOOR(10.99) CEIL(10.1)
+------------ ----------
+          10         11
+-- 사원명, 급여, 월급여(급여/12), 세금(급여의 9%)을 추출
+-- 단, 월급여는 십단위에서 반올림하고, 세금은 일단위에서 절삭
+select saname, sapay, round(sapay/12, -2) "월급여", trunc(sapay*0.09, -1) "세금" from sawon;
+
+2. 문자열 함수
+SQL> select trim('   bit academy   '), ltrim('   bit academy   '), rtrim('   bit academy   ') from dual;
+
+TRIM('BITAC LTRIM('BITACAD RTRIM('BITACAD
+----------- -------------- --------------
+bit academy bit academy       bit academy
+
+SQL> select length('비트 academy'), lengthb('비트 academy') from dual;
+
+LENGTH('비트ACADEMY') LENGTHB('비트ACADEMY')
+--------------------- ----------------------
+                   10                     12
+--instr(문자열, 찾은문자, 검색시작위치, N번째) : 찾는 문자의 위치값이 숫자
+select ename from emp
+where instr(ename, 'L', 1, 2) > 0
+   and instr(ename, 'L', 1, 3) = 0;
+
+-- 채우기 함수*** lpad & rpad(문자열, 전체크기, 채울문자)
+SQL> col name format a20 // col 컬럼명 format aXX(byte) : 컬럼크기 조절
+
+SQL> select saname, lpad(saname, 20, '#') name, rpad(saname, 20, '#') name from sawon
+
+SANAME     NAME                 NAME
+---------- -------------------- --------------------
+홍길동     ##############홍길동 홍길동##############
+한국남     ##############한국남 한국남##############
+이순신     ##############이순신 이순신##############
+이순라     ##############이순라 이순라##############
+놀기만     ##############놀기만 놀기만##############
+류별나     ##############류별나 류별나##############
+채시라     ##############채시라 채시라##############
+이성계     ##############이성계 이성계##############
+무궁화     ##############무궁화 무궁화##############
+
+-- 사원명, 급여, 급여그래프(급여의 100의 '*')를 추출
+col pay_star format a50
+select saname, sapay, lpad('*', sapay/100, '*') pay_star from sawon;
+
+홍길동 2500 *************************
+박길동 1000 **********
+
+-- 문자열 추출 함수***** substr(문자열, N번째, N개)
+SQL> select substr('bit academy', 3, 4) from dual;
+
+SUBS
+----
+t ac
+
+-- 고객명, 주민번호, 주민번호1(041201-*******), 주민번호2(******-3182518)를 추출
+select goname , rpad(substr(gojumin,0,7),14,'*') jumin1 , lpad(substr(gojumin,7,14),14,'*') jumin2 from gogek;
+
+3. 조건 함수
+-decode(기준값, 조건1, 결과1, 조건2, 결과2, .....,그외 결과) "컬럼명"
+-case [기준값] when 조건1 then 결과1 when 조건2 then 결과2 ..... else 그외 결과 end "컬럼명"
+        범위조건인 경우 기준값은 생략가능!!
+
+select saname, deptno, decode(deptno,10, '영업', 20, '관리', 30, '총무', '전산') "부서명" from sawon;
+			
+select saname, deptno, case deptno when 10 then '영업'   case when sapay<1000 then
+			         when 20 then '관리' 
+			         when 30 then '총무' 
+			         else '전산' 
+		     end "부서명" from sawon;
+
+-고객명, 전화번호, 성별을 추출(decode)
+select goname, gotel, decode(substr(gojumin, 8, 1), '1', '남자', '2', '여자') "성별" from gogek;
+
+-사원명, 급여, 보너스를 추출(case)
+단, 보너스를 급여가 0   ~1000 -> 급여의 10%
+                    	1000~2000 -> 급여의 15%
+                      	2000~     -> 급여의 20%
+		null      -> 0
+select saname, sapay, case 	when sapay < 1000 then floor(sapay*0.1)
+                 		when sapay <= 2000 then floor(sapay*0.15)
+                 		when sapay > 2000 then floor(sapay*0.2)
+                		else 0 end “보너스” 
+from sawon;
+
+4. 변환 함수
+-to_char(날짜|숫자, '형식') : 날짜 또는 숫자를 지정한 형식의 문자열로 변환
+-to_date('날짜형식의 문자열', '형식') : 날짜형식의 문자열을 지정한 형식의 날짜로 변환 : 시간표현할 때 많이씀
+-to_number('숫자형식의 문자열') : 숫자형식의 문자열은 숫자로 변환 : 오라클은 자동변환((예) '100'+150)해서 거의 사용하지 않음
+
+-현재 세션의 날짜형식 정보 : nls_session_parameters (뷰)
+-세션 형식 변경
+alter session set 파라미터명=값;
+alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';
+
+SQL> select * from nls_session_parameters;
+
+PARAMETER                                          VALUE
+-------------------------------------------------- ----------------------------------
+NLS_LANGUAGE                                       KOREAN
+NLS_TERRITORY                                      KOREA
+NLS_CURRENCY                                       ￦		//
+NLS_ISO_CURRENCY                                   KOREA
+NLS_NUMERIC_CHARACTERS                             .,
+NLS_CALENDAR                                       GREGORIAN
+NLS_DATE_FORMAT                                    RR/MM/DD //***
+NLS_DATE_LANGUAGE                                  KOREAN	//***
+NLS_SORT                                           BINARY
+NLS_TIME_FORMAT                                    HH24:MI:SSXFF
+NLS_TIMESTAMP_FORMAT                               RR/MM/DD HH24:MI:SSXFF
+
+PARAMETER                                          VALUE
+-------------------------------------------------- ----------------------------------
+NLS_TIME_TZ_FORMAT                                 HH24:MI:SSXFF TZR
+NLS_TIMESTAMP_TZ_FORMAT                            RR/MM/DD HH24:MI:SSXFF TZR
+NLS_DUAL_CURRENCY                                  ￦
+NLS_COMP                                           BINARY
+NLS_LENGTH_SEMANTICS                               BYTE
+NLS_NCHAR_CONV_EXCP                                FALSE
+
+17 개의 행이 선택되었습니다.
+
+--날짜관련 형식
+SQL> select sysdate, to_char(sysdate, 'year') from dual;
+
+SYSDATE  TO_CHAR(SYSDATE,'YEAR')
+-------- ------------------------------------------
+21/06/14 twenty twenty-one
+
+					'yyyy' or 'yy'          
+					'month' or 'mon'        
+					'mm'                    
+					'q'        // 분기          
+					'd'        // 2(1-일요일) 요일이 숫자  : 정렬때문에 요일을 숫자로 씀           
+					'day'			 
+					'dy'	                
+					'ddd'                   
+					'hh' or 'hh24'           
+					'am' or 'pm'            
+					'miss'
+
+SQL> select sysdate, to_char(sysdate, 'yyyy-mm-dd day am hh:mi:ss') from dual;
+
+SYSDATE  TO_CHAR(SYSDATE,'YYYY-MM-DDDAYAMHH
+-------- ----------------------------------
+21/06/14 2021-06-14 월요일 오후 05:16:36
+
+-fm, sp, th
+select sysdate, to_char(sysdate,'fmyyyy.mm.ddth day am hh:mi:ss') from dual;
+
+//fm붙이면 09에서 0이 사라짐(영문요일인 경우 보기좋게 출력), th를 붙이면 th가 붙어서 나옴
+//sp를 붙이면 영어로 나옴
+
+-- 숫자관련 형식(0-값이 없어도 출력, 9-값이 없으면 출력안 함)
+SQL> select saname, to_char(sapay, '9,990') from sawon;   // 'fm$9,990'
+
+SANAME     TO_CHA
+---------- ------
+홍길동      5,000
+한국남      3,000
+이순신      3,500
+
+5. 날짜 함수
+SQL> select last_day(sysdate), next_day(sysdate, '월'), add_months(sysdate, 3) from dual;
+
+LAST_DAY NEXT_DAY ADD_MONT
+-------- -------- --------
+21/06/30 21/06/21 21/09/14
+
+-- 날짜와 날짜 사이의 개월수를 반환하는 함수
+SQL> select saname, sahire, months_between(sysdate, sahire) from sawon;
+
+SANAME     SAHIRE   MONTHS_BETWEEN(SYSDATE,SAHIRE)
+---------- -------- ------------------------------
+홍길동     80/01/01                     497.442915  // 소수이하는 쓰레기값
+한국남     88/11/01                     391.442915
+이순신     85/03/01                     435.442915
+이순라     90/05/01                     373.442915
+놀기만     96/06/01                     300.442915
+류별나     89/12/01                     378.442915
+채시라     93/10/01                     332.442915
+
+-- 사원명, 입사일, 근무기간(XX년 XX개월)을 추출
+col 근무기간 format a30
+select saname, sahire, floor(months_between(sysdate, sahire)/12) || '년 ' ||
+		   floor(mod(months_between(sysdate, sahire),12)) || '개월' as "근무기간"
+from sawon;
+
+
+

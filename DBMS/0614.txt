@@ -1,0 +1,418 @@
+SQL 명령 ( X.PL/SQL (컴파일) )
+
+X.PL = 절차적 언어
+
+프로시저, 트리거, 함수, 커서(정의) = DB용어
+* where이 없는 절은 모든 행이 true다. *
+
+DBMS - 외부명령( SQL, PL/SQL ), 변수선언, PL/SQL객체 호출
+
+DBMS : 외부명령( SQL, PL/SQL ) 4가지
+1. DDL  (데이터 정의 명령)      : create, alter, drop, truncate(table의 모든 행 삭제, table 삭제가 아님.), rename
+ => 대상 : 객체 (user, table, index sequence 등), 내부적으로 기본적으로 commit을 함.
+
+2. DML (데이터 조작 명령)      : insert, update(데이터 변경, 한 개만 NULL로 바꾸는 등), delete(데이터 전체 삭제), [select](추출, 90%이상 사용.) 
+ => 대상 : 데이터(= low(행))
+
+3. DCL  (데이터 관리 명령)      : grant(권한 부여), revoke(권한 회수), [deny](거부권한 -> MS만 있음)
+ => (보안) 권한 관련 명령
+
+* 롤(단어로 생김. 줄임X) : 관련 권한의 집합 *
+
+4. TCL  (Transction 관리 명령)  : commit(저장), rollback(취소), sarepoint(저장점)
+ => DML 명령 중 하나로 볼 수 있음, 기본적으로 auto commit off 상태임.
+
+
+* delete emp VS truncate table emp*
+1. 성능 측면
+=> delete는 행 단위로 실행된다. 그렇다면 100만행인 경우는? => 100만 번 실행
+=> 하지만 truncate는 테이블로 실행된다. 그렇다면 100만행인 경우는? => 100만행이여도 1번만 실행됨.
+
+2. 버퍼에 들어가냐 안들어가냐
+=> delete는 버퍼에 들어가지만 truncate는 버퍼에 들어가지 않는다.
+
+* table 생성 *
+-- 생성
+create table test(id number(10), name varchar2(20), addr varchar2(30));
+=> 태이블 생성
+
+-- 변경
+SQL> alter table test
+  2  add sex char(4);
+=> 테이블 추가 (컬럼)
+
+SQL> alter table test
+  2  modify addr varchar2(50);
+=> 데이터 변경
+
+-- 삭제
+SQL> alter table test
+  2  drop column sex;
+=> 컬럼 삭제 (삭제 시 컬럼이 꼭 필요함.)
+
+SQL> drop table test;
+=> 테이블 삭제
+
+* Constrain (제약 조건) *
+=> 부여단위 - 컬럼
+ * 부여단위가 컬럼인 것은 총 2개이다. 제약조건과 인덱스 *
+ * where에 많이 사용하는 것에 인덱스를 사용 *
+ * 데이터 무결성 = 신뢰성이 높음. => 제약조건으로 할 수 없으면? => 트리거(PL/SQL) *
+
+1. 개체 무결성 
+- not null = null은 안됨
+- unique = 유일제약, null은 허용
+- primary key(기본 키) : not null + unique (하나의 테이블에 한 개만 있음.), 하나의 칼럼에서 하나의 행 데이터를 식별하는 것.
+
+2. 영역(범위)
+- check : 영역 내의 유효한 값인지 여부, null은 허용함.
+  * default : 기본값, 입력 시 생략이 된다면 들어가는 값, null이 들어갔었음. *
+
+3. 참조
+- foreign key(참조키) : 다른 칼럼을 참조, 내가 참조하는 값 외에는 들어올 수 없음. (만들 때 작은 것부터 제작하고 큰 것을 만들어야함.)
+                             참조할 때 기본 키(primary key)를 참조해야함.
+  * cascade 옵션 : 참조하는 부모가 죽으면 자식의 행(참조하는 행) 자동으로 죽는 것 *
+	- delete(orade)
+	- updata(oradex)
+
+* Constraint(제약 조건) 문법 *
+1. 칼럼 단위로 제약 설정하는 방식 : 컬럼을 정의할 때 함께 거는 것.
+ex) create table test(id number(10) [constrain test_id_pk] primary key, ...) // [ 테이블_컬럼_제약 ]는 생략 가능
+* not null은 칼럼 단위 방식만 가능 *
+* not null을 포함한 전부(5개) 사용 가능 *
+* 복합컬럼제약인 경우도 할 수 없음. *
+
+2. 테이블 단위로 제약 설정하는 방식 : 컬럼을 추가하듯이
+ex) create table test(id numbe(10), ... , ... contraint test_id_pk pramary key(id));
+* not null을 제외한 나머지(4개)만 가능. *
+* 복합컬럼제약인 경우도 할 수 있음. * => 컬럼 3개를 1개로 잡아서 1개의 pramary key로 사용할 수 있다는 말.
+
+* Constraint(제약 조건) *
+1. 칼럼 단위
+-- 학생 테이블
+create table student
+(hakbun number(9) constraint student_hakbun_pk primary key,
+ sname varchar(2) constraint student_sname_nn not null,
+ addr varchar2(30) default '서울',
+ age number(3) constraint student_age_ck check(age <= 30),
+ jumin varchar2(14) constraint sudent_jumin_uq uqiue);
+
+---------------------------------------------------------------------참고
+-- jumin에 not null 추가 또는 삭제
+ alter table student
+ modify jumin [constraint student_jumin_nn not null | null];
+
+-- not null을 제외한 모든 제약
+alter table student
+-add constraint student_jumin_uq unique(jumin); // 제약 추가
+-drop constraint student_jumin_uq                  // 제약 삭제
+---------------------------------------------------------------------참고
+
+-- 도서대출 테이블
+create table library
+(sno number(9) constraint lib_sno_fk references student(hakbun) [on delete cascabe]
+ book varchar2(20) not null,
+ loan_date date default sysdate);
+
+2. 테이블 단위
+create table student
+(hakbun number(9),
+ sname varchar(2) constraint student_sname_nn not null,
+ addr varchar2(30) default '서울',
+ age number(3) constraint student_age_ck check(age <= 30),
+ jumin varchar2(14),
+constraint student_hakbun_pk primary key(hakbun),
+constraint student_age_ck check(age <= 30),
+constraint sudent_jumin_uq uqiue(jumin));
+
+-- 도서대출 테이블
+create table library
+(sno number(9) 
+ book varchar2(20) not null,
+ loan_date date default sysdate,
+ constraint lib_sno_fk foreign key(sno) references student(hakbun));
+
+* 단일행 함수 = 10개를 돌리면 10개의 값이 나오는 것 *
+* 다중행 함수 = 10개를 돌리면 1개의 값이 나오는 것 * => 계산되는 것 밖에 없음. (수치 관련)
+
+* 단일행 함수
+1. 수학 함수
+// 간단한 수학 공식 ///////////////////////////////////////////////////////////////////////////////////
+SQL> select sin(10), cos(10), tan(10), log(10, 2), power(3, 5) from dual;
+
+   SIN(10)    COS(10)    TAN(10)  LOG(10,2) POWER(3,5)
+---------- ---------- ---------- ---------- ----------
+-.54402111 -.83907153 .648360827 .301029996        243
+* POWER = 제곱 *
+
+// 반올림 ///////////////////////////////////////////////////////////////////////////////////////////////
+SQL> select round(254.1938, 2), round(254.1638, -2), round(254.1638, 0) from dual; 
+
+ROUND(254.1938,2) ROUND(254.1638,-2) ROUND(254.1638,0)
+----------------- ------------------ -----------------
+           254.19                300               254
+// 버림 /////////////////////////////////////////////////////////////////////////////////////////////////
+SQL> select trunc(24.1638, 2), trunc(254.1638, -2), trunc(254.1638, 0) from dual;
+
+TRUNC(24.1638,2) TRUNC(254.1638,-2) TRUNC(254.1638,0)
+---------------- ------------------ -----------------
+           24.16                200               254
+// 올림, 내림 /////////////////////////////////////////////////////////////////////////////////////////
+SQL> select floor(10.99), ceil(10.1) from dual; // 올림, 내림
+
+FLOOR(10.99) CEIL(10.1)
+------------ ----------
+          10         11
+
+* floor은 작은 정수가 나오고 ceil은 큰 정수가 나온다. *
+* 음수에는 조심해야한다. 아래와 같이 나옴. *
+FLOOR(-10.99) CEIL(-10.1)
+------------ ----------
+          -11         -10
+
+-- 사원명, 급여 월급여(급여/12), 세금(급여의 9%)을 추출
+-- 단, 월급여는 십단위에서 반올림하고, 세금은 일단위에서 절삭
+=> SQL> select saname"사원명", sapay"급여",round(sapay/12, -2) "월급", trunc(sapay*0.09, -1)"세금" from sawon;
+
+2. 문자열 함수
+
+// length = 실제 글자 수, lengthb = 유니코드 비트 수
+select length('비트 academy'), lengthb('비트 academy') from dual; 
+
+LENGTH('비트ACADEMY') LENGTHB('비트ACADEMY')
+--------------------- ----------------------
+                   10                     12
+
+// instr함수 = instr([칼럼], [찾고 싶은 글자], [시작지점], [N번 째]) : 찾는 문자의 위값이 숫자
+
+// 채우기 함수 *** 
+lpad & rpad 함수 = ?pad[컬럼명], [바이트 수], [채우고 싶은 글자]);
+? = l : 왼쪽부터 
+  = r : 오른쪽부터
+
+SQL> select saname, rpad(saname, 20, '#') from sawon;
+SANAME     RPAD(SANAME,20,'#')
+---------- ----------------------------------------
+홍길동     홍길동##############
+한국남     한국남##############
+이순신     이순신##############
+이순라     이순라##############
+놀기만     놀기만##############
+류별나     류별나##############
+채시라     채시라##############
+이성계     이성계##############
+무궁화     무궁화##############
+임꺽정     임꺽정##############
+깨똥이     깨똥이##############
+
+SQL> select saname, lpad(saname, 20, '#') from sawon;
+SANAME     LPAD(SANAME,20,'#')
+---------- ----------------------------------------
+홍길동     ##############홍길동
+한국남     ##############한국남
+이순신     ##############이순신
+이순라     ##############이순라
+놀기만     ##############놀기만
+류별나     ##############류별나
+채시라     ##############채시라
+이성계     ##############이성계
+무궁화     ##############무궁화
+임꺽정     ##############임꺽정
+깨똥이     ##############깨똥이
+
+-- 사원의 이름, 금액, 금액 그래프(100당 * 한 개로 그려라)를 그려라
+SQL> col pay_star format a50 // 크기를 맞추기 위함.
+SQL> select saname, sapay, lpad('*', sapay/100, '*') pay_star from sawon;
+
+// 문자열 추출 함수 ***** 
+substr 함수 = substr([문자열], [N번째부터], [N개])
+
+-- 고객명, 주민번호, 주민번호1(111111-*******), 주민번호2(******-1111111)를 추출
+SQL> col "주민번호 1" format a15
+SQL> col "주민번호 2" format a15
+SQL> select gojumin, rpad(substr(gojumin, 1, 7), 14, '*')"주민번호 1", 
+        lpad(substr(gojumin, 7, 14), 14, '*')"주민번호 2" from gogek;
+
+3. 조건 함수
+- decode([기준값], [조건1], [결과1], [조건2], [결과2], ... , 그 외 결과) [컬럼명]
+=> 범위조건을 사용할 수 없다.
+
+-- 고객명, 전화번호, 성별을 추출해라. 
+=> 성별의 정보는 없으므로 주민번호에서 추출해서 해석.
+SQL> select goname, gotel, decode(substr(gojumin, 8, 1), '1', '남자', '2', '여자') "성별" from gogek;
+
+- case [기준값] when [조건1] than [결과1] when [조건2] than [결과2] else ... end [컬럼명]
+=> 범위조건인 경우 기준값은 생략 가능하다.
+==============================================================
+-- 사원명, 급여, 보너스를 추출해라
+=> 단, 보너스는 급여가 0~1000 이면 급여의 10%, 1000 ~ 2000이면 급여의 15%
+=> 2000 이상이면 급여의 20%이고 급여가 null이면 0원이다.
+SQL> select saname, sapay, case when sapay < 1000 then sapay * 0.1
+  2  when sapay between 1000 and 2000 then sapay * 0.15
+  3  when sapay > 2000 then sapay * 0.2
+  4  else 0 end "보너스" from sawon;
+============위는 내가 한 버전=========아래는 강사님 버전=================
+SQL> select saname, sapay, case when sapay < 1000 then sapay * 0.1
+  2  when sapay <= 2000 then sapay * 0.15
+  3  when sapay > 2000 then sapay * 0.2
+  4  else 0 end "보너스" from sawon;
+==============================================================
+
+* 휴지통 비우기 = PURGE RECYCLEBIN; * // table을 지우면 없지만 쓰레기값으로 남아있는데 그걸 없애줌.
+
+4. 변환 함수
+-to_char(날짜|숫자, '형식') : 날짜 또는 숫자를 지정한 형식의 문자열로 변환
+-to_date('날짜형식의 문자열', '형식') : 날짜형식의 문자열을 지정한 형식의 날짜로 변환 : 시간표현할 때 많이씀
+-to_number('숫자형식의 문자열') : 숫자형식의 문자열은 숫자로 변환 : 오라클은 자동변환((예) '100'+150)해서 거의 사용하지 않음
+
+-현재 세션의 날짜형식 정보 : nls_session_parameters (뷰)
+-세션 형식 변경
+alter session set 파라미터명=값;
+alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';
+
+SQL> select * from nls_session_parameters;
+
+SQL> select sysdate, to_char(sysdate, 'yyyy-mm-dd day am hh:mi:ss') from dual;
+
+SYSDATE  TO_CHAR(SYSDATE,'YYYY-MM-DDDAYAMHH
+-------- ----------------------------------
+21/06/14 2021-06-14 월요일 오후 05:16:36
+
+-fm, sp, th
+select sysdate, to_char(sysdate,'fmyyyy.mm.ddth day am hh:mi:ss') from dual;
+
+//fm붙이면 09에서 0이 사라짐(영문요일인 경우 보기좋게 출력), th를 붙이면 th가 붙어서 나옴
+//sp를 붙이면 영어로 나옴
+
+-- 숫자관련 형식(0-값이 없어도 출력, 9-값이 없으면 출력안 함)
+SQL> select saname, to_char(sapay, '9,990') from sawon;   // 'fm$9,990'
+
+SANAME     TO_CHA
+---------- ------
+홍길동      5,000
+한국남      3,000
+이순신      3,500
+
+--- 날짜 관련 형식
+SQL> select sysdate, to_char(sysdate, 'year') from dual;
+
+SYSDATE  TO_CHAR(SYSDATE,'YEAR')
+-------- ------------------------------------------
+21/06/14 twenty twenty-one
+
+SQL> select sysdate, to_char(sysdate, 'yyyy') from dual; // 연도 풀네임
+
+SYSDATE  TO_C 
+-------- ----
+21/06/14 2021
+
+SQL> select sysdate, to_char(sysdate, 'yy') from dual; // 연도
+
+SYSDATE  TO
+-------- --
+21/06/14 21
+
+SQL> select sysdate, to_char(sysdate, 'mon') from dual; // 월 풀네임
+
+SYSDATE  TO_CHAR(
+-------- --------
+21/06/14 6월
+
+SQL> select sysdate, to_char(sysdate, 'month') from dual; // 월 풀네임
+
+SYSDATE  TO_CHA
+-------- ------
+21/06/14 6월
+
+SQL> select sysdate, to_char(sysdate, 'mm') from dual; // 월
+
+SYSDATE  TO
+-------- --
+21/06/14 06
+
+SQL> select sysdate, to_char(sysdate, 'q') from dual; // 분기
+
+SYSDATE  T
+-------- -
+21/06/14 2
+
+SQL> select sysdate, to_char(sysdate, 'd') from dual; // 요일 (1 : 일요일, 2 : 월요일, 3 : 화요일 ... 7 : 토요일)
+					      // 가독성이 떨어지는데도 불구하고 이렇게 하는 이유는 정렬 때문에.
+SYSDATE  T
+-------- -
+21/06/14 2
+
+SQL> select sysdate, to_char(sysdate, 'day') from dual; // 요일 풀네임
+
+SYSDATE  TO_CHAR(S
+-------- ---------
+21/06/14 월요일
+
+SQL> select sysdate, to_char(sysdate, 'dy') from dual; // 간략하게 요일
+
+SYSDATE  TO_C
+-------- ----
+21/06/14 월
+
+SQL> select sysdate, to_char(sysdate, 'ddd') from dual; // 현재 1월 1일부터 지금까지 : 365일 기준 날짜
+
+SYSDATE  TO_
+-------- ---
+21/06/14 165
+
+SQL> select sysdate, to_char(sysdate, 'hh') from dual; // 시간을 알려줌
+
+SYSDATE  TO
+-------- --
+21/06/14 05
+
+SQL> select sysdate, to_char(sysdate, 'hh24') from dual; // 24로 알려줌
+
+SYSDATE  TO
+-------- --
+21/06/14 17
+
+SQL> select sysdate, to_char(sysdate, 'am') from dual; 
+
+SYSDATE  TO_C
+-------- ----
+21/06/14 오후
+
+SQL> select sysdate, to_char(sysdate, 'pm') from dual;
+
+SYSDATE  TO_C
+-------- ----
+21/06/14 오후
+
+SQL> select sysdate, to_char(sysdate, 'miss') from dual; // mi : 분, ss : 초
+
+SYSDATE  TO_C
+-------- ----
+21/06/14 0740
+
+-- 숫자 관련 형식 (0, 9)
+=> 0 : 값이 없어도 출력
+=> 9 : 없이 없으면 출력이 안됨.
+
+alter session set NLS_DATE_LANGUAGE = 'english'; // 언어 바꾸기
+
+5. 날짜 함수
+select last_day(sysdate), next_day(sysdate, '월'),
+  2  add_months(sysdate, 3) from dual;
+
+last_day([기준 날짜]) 함수 : 기준 날짜의 마지막 날
+=> last_day(sysdate)
+add_months([기준 날짜], A(정수)) 함수 : 기준 날짜 부터 A달 후
+=> add_months(sysdate, 3)
+
+// 기준 날짜와 기준 날짜 사이의 간격
+select months_between(sysdate, '96/09/23') from dual;
+MONTHS_BETWEEN(SYSDATE,'96/09/23')
+----------------------------------
+                         296.73328
+* 주의할 점은 큰 날짜(현재일 가능성 큼)가 앞에 작은 날짜(과거)는 뒤에 있어야한다.*
+
+-- 사원명, 입사일, 근무기간(xx년 xx개월)을 추출
+SQL> select saname, sahire, floor(floor(months_between(sysdate, sahire))/12)||'년'||
+  2  floor(mod(months_between(sysdate, sahire), 12)) || '개월' as "근무기간" from sawon;
+

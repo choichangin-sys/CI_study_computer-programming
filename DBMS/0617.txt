@@ -1,0 +1,341 @@
+*** Merge(병합), 오라클 최근 버전에 나온 기능.
+- 한 번의 조건으로 데이터 입력 또는 변경 또는 삭제를 가능하게 하는 명령
+merge into table_name // 데이터 변경이 발생할 테이블명
+               using table_name on (조건) // 비교대상 테이블명(조건 - 키)
+               when matched then
+                           update set ~
+               when not matched then
+                           inser [(칼럼, ...)] values~;
+
+-- sawon_20 table에 사원이 존재하면 (sawon과 비교) 급여를 10% 인상하고, 존재하지 않으면 사원 정보를 입력하는 
+병합을 작성
+SQL> merge into sawon_20 s1
+  2  using sawon s on (s.sabun = s1.sabun)
+  3  when matched then
+  4  update set sapay = sapay * 1.1
+  5  when not matched then
+  6  insert values(s.sabun, s.saname, s.deptno, s.sajob, s.sapay, s.sahire, s.sasex, s.samgr);
+
+TCL
+=> 트랜젝션(DML) 제어(관리) 명령 = 데이터 흐름제어문
+=> commit(저장), rollback(취소), savepoint(저장지점)
+=> commit을 하면 rollback이 안됨.
+=> 비정상 종료시 rollback됨.
+
+* DBMS에서 사용되는 객체
+1. 시퀸스 : 규칙적인 순서번호를 갖는 객체, 데이터 입력(insert)시 자동으로 입력되도록 사용, 기본값은 노사이클
+SQL> create sequence gogek_no_seq
+  2  increment by 10 // 증가치
+  3  start with 201    // 초기치
+  4  maxvalue 9999;  // 최대치
+=> increment가 음수면 minvalue가 됨.
+
+=> 적용 (사용할 때 insert 명령)
+insert into gogek(gobun, goname) values (gogek_no_seq. nextval, '홍동우'); // [시퀀스명.nextval (데이터)] 
+
+===확인==========================================
+     GOBUN GONAME     GOTEL          GOJUMIN             GODAM
+---------- ---------- -------------- -------------- ----------
+       201 홍동우
+       211 홍다은
+         1 류민       123-1234       700113-1537915          3
+         2 강민       343-1454       690216-1627914          2
+         3 영희       144-1655       750320-2636215
+===확인==========================================
+
+SQL> select gogek_no_seq.currval from dual;
+   CURRVAL
+----------
+       211
+
+SQL> insert into gogek(gobun, goname) values (gogek_no_seq. nextval, '홍다은'); 
+// 입력시 실패하더라도 카운트 증가함. (무의미)
+
+2. 뷰 :  가상 테이블 (하드 디스크에 물리적으로 저장되지 않음)
+- 데이터 사전 뷰(data dictionary wiew) : 오라클에서 필요한 모든 정보를 가진 객체 (select 명령으로 사용)
+정적 => all_    : type의 요약 정보 (모든 세션)
+           user_  : type의 자세한 정보 (현재 세션만) ex) desc user_constraints
+           dba_  : 모든계정의 자세한 정보 (DB 관리자만)
+
+동적 => v$~ : 동적성능뷰 통계정보 (DB 관리자만)
+
+- 사용자정의 뷰 (보안객체) :  create view 권한 필요!!, 제한된 엑세스를 제공하는 객체
+=> 형식 : create view view_name (컬럼명, ...)  as select ~~:
+=> 가상 테이블 개념 (디스크에 데이터 저장되지 않는다 => user_obgects에 존재하지 않음)
+=> 정보 뷰 : user_views
+=> 기본적으로 DML가능 (집계된 결과 또는 컬럼이 조작된 경우, 연산작업이 된 경우의 수정 불가)
+=> 옵션 with read only를 사용하면 읽기전용 뷰 생성
+
+- 목적
+=> 복잡한 쿼리를 단순하게 사용 (수십, 수백 라인의 쿼리문은 간단하게 쿼리. 단, 성능에는 영향성 없음.)
+=> 제한된 엑세스를 구현 -> 보여주고 싶은 정보를 가진 뷰 생성 (보안객체)
+
+3. 인덱스 : 컬럼에 생성하는 것, 검색 성능을 향상 시키는 객체 <-> full table scan(가장 비효율적 검색) : 1 extent(저장단위 = 적은 수의 데이터) 이하에 적합
+=> PK or UQ 제약조건은 기본값으로 인덱스 소유
+=> where절에서 자주 사용되는 컬럼에 생성 (복합(두 개 이상의 컬럼) 인덱스인 경우 사용 순서대로 생성)
+=> 인덱스도 정렬함. 정적 데이터(DML이 자주 발생하지 않는 컬럼) 킬럼에 생성 -> 데이터가 변경되면 인덱스를 재구성하므로
+=> 정보 뷰 : user_indexes / user_ind_columns
+
+SQL> select index_name, index_type, table_name from user_indexes;
+
+INDEX_NAME                     INDEX_TYPE                  TABLE_NAME
+------------------------------ --------------------------- ---------------------
+STUDENT_HAKBUN_PK              NORMAL                      STUDENT
+STUDENT_JUMIN_UQ               NORMAL                      STUDENT
+SAWON_SABUN_PK                 NORMAL                      SAWON
+GOGEK_GOBUN_PK                 NORMAL                      GOGEK
+GOGEK_GOJUMIN_UQ               NORMAL                      GOGEK
+DEPT_DEPTNO_PK                 NORMAL                      DEPT
+DEPT_DNAME_UQ                  NORMAL                      DEPT
+
+SQL> select index_name, column_name, table_name from user_ind_columns;
+
+INDEX_NAME                     COLUMN_NAME                    TABLE_NAME
+------------------------------ ------------------------------ ------------------
+DEPT_DEPTNO_PK                 DEPTNO                         DEPT
+DEPT_DNAME_UQ                  DNAME                          DEPT
+GOGEK_GOBUN_PK                 GOBUN                          GOGEK
+GOGEK_GOJUMIN_UQ               GOJUMIN                        GOGEK
+SAWON_SABUN_PK                 SABUN                          SAWON
+STUDENT_HAKBUN_PK              HAKBUN                         STUDENT
+STUDENT_JUMIN_UQ               JUMIN                          STUDENT
+
+-- 문법
+SQL> create index i_sawon_sabun on sawon(sabun);	// b*tree(normal)
+
+SQL> create bitmap index i_sawon_sasex on sawon(sasex);// bitmap
+
+SQL> create index i_sawon_sapay on sawon(sapay*0.1);	// function-based
+
+SQL> create index i_sawon_samgr on sawon(samgr) reverse;// reverse-key
+
+SQL> create index i_sawon_deptno on sawon(deptno desc);
+
+SQL> select table_name, index_name, index_type from user_indexes;
+
+TABLE_NAME                     INDEX_NAME                     INDEX_TYPE
+------------------------------ ------------------------------ ---------------------------
+STUDENT                        STUDENT_HAKBUN_PK              NORMAL
+STUDENT                        STUDENT_JUMIN_UQ               NORMAL
+SAWON                          SAWON_SABUN_PK                 NORMAL
+SAWON                          I_SAWON_SASEX                  BITMAP				//
+SAWON                          I_SAWON_SAPAY                  FUNCTION-BASED NORMAL		
+SAWON                          I_SAWON_SAMGR                  NORMAL/REV
+SAWON                          I_SAWON_DEPTNO                 FUNCTION-BASED NORMAL
+GOGEK                          GOGEK_GOBUN_PK                 NORMAL
+GOGEK                          GOGEK_GOJUMIN_UQ               NORMAL
+DEPT                           DEPT_DEPTNO_PK                 NORMAL
+DEPT                           DEPT_DNAME_UQ                  NORMAL
+
+SQL> select table_name, index_name, column_name from user_ind_columns;
+
+TABLE_NAME                     INDEX_NAME                     COLUMN_NAME
+------------------------------ ------------------------------ ------------------------------
+DEPT                           DEPT_DEPTNO_PK                 DEPTNO
+DEPT                           DEPT_DNAME_UQ                  DNAME
+GOGEK                          GOGEK_GOBUN_PK                 GOBUN
+GOGEK                          GOGEK_GOJUMIN_UQ               GOJUMIN
+SAWON                          I_SAWON_DEPTNO                 SYS_NC00010$	//
+SAWON                          I_SAWON_SAMGR                  SAMGR
+SAWON                          I_SAWON_SAPAY                  SYS_NC00009$
+SAWON                          I_SAWON_SASEX                  SASEX
+SAWON                          SAWON_SABUN_PK                 SABUN
+STUDENT                        STUDENT_HAKBUN_PK              HAKBUN
+STUDENT                        STUDENT_JUMIN_UQ               JUMIN
+
+
+
+1. b*tree index(pk, uq)    = 중복성이 적은 컬럼에 사용 (기본값)
+2. bitmap index             = 중복성이 높은 컬럼에 사용 ( b*tree의 1/6 크기 )
+3. reverse-key index       = b*tree index의 역방향, 동적데이터(컬럼)에 사용
+4. function-based index   = 컬럼에 수식을 포함하는 경우
+5. descending index       = 가장 최근에 입력된 데이터 위주의 검색을 할 때 사용
+6. bitmap-join index 
+
+
+* 인덱스가 생성되었음에도 인덱스를 사용하지 않는 경우 *** *
+=> 인덱스가 생성된 컬럼이 조작되어 사용된 경우 (수식, 함수....)
+=> 인덱스가 생성된 컬럼의 순서대로 사용하지 않은 경우 (두 개 이상의 컬럼에 인덱스 생성)
+=> is null, like 연산자를 사용한 경우
+
+* DCL 명령 *
+=>
+
+* 권한 *
+=> privilege 2종류가 있음. -> 관련 privilege 집합 -> role
+privilege : - system privilege : 오라클에서 사용 가능한 명령, create (table, _user, sesion, veiw 등)
+              - object privilege : 특정 객체의 접근 권한, [select, insert, update delete, execute] on (테이블, 프로시저)
+
+=> system privilege -> DB관리자만 가능, EX) -grant 권한, ... to 대상 (user, role), [with admin option] - system
+=> object privilege -> 소유자 (객체를 소유하고 있는 유저)
+
+* 상속 *
+=> 권한 부여, 객체명은 1개만 쓸 수 있음.
+=> -grant 권한, ... to 대상 (user, role), [  .....  ] 
+=> [with admin option] - system
+=> [with grant option] - object
+
+=> 권한 회수
+=> revoke 권한, ... from 대상
+=> system에 부여한 권한은 회수 시 개별 회수를 해야함
+=> object에 부여한 권한은 회수 시 일괄회수 
+
+* system 보안 *
+-> 1. 로그인 (계정) login
+-> 2. 사용권한 (접근, 사용) permission
+-> 3. policy (정책) => audit (감사)
+=> 3단계가 보안이 제일 강함.
+
+=> 권한 부여 =============================================================
+SQL> grant select on cci.gogek to scott;
+권한이 부여되었습니다.
+
+scott에 접속 한 후
+
+SQL> select * from cci.gogek;
+
+     GOBUN GONAME     GOTEL          GOJUMIN             GODAM
+---------- ---------- -------------- -------------- ----------
+       201 홍동우
+       211 홍다은
+         1 류민       123-1234       700113-1537915          3
+         2 강민       343-1454       690216-1627914          2
+         3 영희       144-1655       750320-2636215
+         4 철이       673-1674       770430-1234567          4
+         5 류완       123-1674       720521-1123675          3
+         6 캔디       673-1764       650725-2534566
+         7 똘이       176-7677       630608-1648614          7
+         8 쇠돌       673-6774       800804-1346574          9
+         9 홍이       767-1234       731225-1234689         13
+
+     GOBUN GONAME     GOTEL          GOJUMIN             GODAM
+---------- ---------- -------------- -------------- ----------
+        10 안나       767-1677       751015-2432168          4
+=====================================================================
+
+=> 권한 회수 ============================================================
+SQL> revoke select on cci.gogek from scott;
+권한이 취소되었습니다.
+
+scott에 접속 한 후
+
+SQL> select * from cci.gogek;
+select * from cci.gogek
+                  *
+1행에 오류:
+ORA-00942: 테이블 또는 뷰가 존재하지 않습니다
+
+======================================================================
+
+-[참고] 엑세스 권한이 없는 객체에 접근하려고 시도하면, [해당 객체가 존재하지 않는다]는 메세지가, 
+         시스템 권한이 없는 명령을 사용하려고 시도하면, [권한이 불충분하다]는 메세지가 출력
+
+4. Role(보안객체)
+=> 관련 privilege들의 집합
+=> create role 권한 필요
+
+=> 관리방법
+=> 1) 롤 생성
+=> 2) 롤에 관련 권한들을 부여
+=> 3) 롤을 세션에게 부여
+
+=> 시스템 롤 정보 (connect, resource, dba, sysdata, ....)
+
+=> 예시 =================================================
+SQL> select grantee, privilege from dba_sys_privs
+  2  where grantee = 'CONNECT' or grantee = 'RESOURCE'
+  3  order by 1;
+
+GRANTEE                        PRIVILEGE
+------------------------------ ----------------------------------------
+CONNECT                        CREATE SESSION
+RESOURCE                       CREATE CLUSTER
+RESOURCE                       CREATE INDEXTYPE
+RESOURCE                       CREATE OPERATOR
+RESOURCE                       CREATE PROCEDURE
+RESOURCE                       CREATE SEQUENCE
+RESOURCE                       CREATE TABLE
+RESOURCE                       CREATE TRIGGER
+RESOURCE                       CREATE TYPE
+
+=======================================================
+
+5. Synonym(동의어) : 보안 객체
+=> 특정 세션에게 테이블명과 소유자를 숨기고, 공용이름으로 엑세스하도록 할 때 사용하는 객체
+=> 형식 : create public sysnonym s_name for [객체명 | 세션];
+=> public가 들어가야 의미가 있다.
+
+SQL -> PL/SQL, PL : 절차적 언어
+
+declare // 정의부 변수, 커서, 예외
+
+begin
+	[exception]
+end;
+
+PL/SQL 문법 -> cursor (정의)
+                -> producte
+                -> function
+                -> trigger
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

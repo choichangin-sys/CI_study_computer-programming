@@ -1,0 +1,112 @@
+1.
+SQL> select * from emp
+  2  where deptno = (select deptno from emp where ename = 'ALLEN');
+
+2.
+SQL> select * from emp
+  2  where deptno = (select deptno from emp where empno = 7521) and
+  3  sal > (select sal from emp where empno = 7934);
+
+3.
+SQL> select * from emp
+  2  where sal < (select avg(sal) from emp);
+
+4.
+SQL> select deptno, min(sal) from emp
+  2  group by deptno
+  3  having min(sal) < (select min(sal) from emp where deptno = 20);
+
+5. 
+SQL> select jobb, sall from (select job jobb, avg(sal) sall
+  2  from emp group by job order by avg(sal) asc)
+  3  where rownum = 1;
+
+6.
+SQL> select e.empno, e.ename, e.job, e.hiredate, e.sal, e.deptno from emp e
+  2  where e.sal= (select max(et.sal) from emp et where et.deptno = e.deptno);
+
+7.
+SQL> select * from emp where sal > (select min(sal) from emp where deptno = 30) and
+  2  deptno != 30;
+
+8. 
+select sal , comm from emp where (sal , comm) 
+in (select sal , comm from emp where deptno = 30) and deptno != 30;
+
+9.
+select * from emp
+where deptno = (select deptno from emp where ename = 'BLAKE');
+
+10.
+select * from emp
+where sal > (select avg(sal) from emp)
+order by sal desc;
+
+11. 
+select empno, ename, sal from emp where deptno
+in(select distinct deptno from emp where ename like '%T%') order by empno;
+
+12. 
+select ename, job, sal from emp
+where deptno = (select deptno from dept where loc = 'CHICAGO');
+
+13.
+select ename, sal from emp where ename != 'KING'
+connect by prior empno = mgr
+start with ename = 'KING';
+
+14.
+SQL> select * from emp
+  2  where sal = (select sal from emp where ename = 'FORD') and
+  3  job = (select job from emp where ename = 'FORD');
+
+15.
+SQL> select ename, job, deptno, sal from emp
+  2  where job = (select job from emp where ename = 'JONES') or
+  3  sal >= (select sal from emp where ename = 'FORD');
+
+16.
+SQL> select ename, job, sal from emp
+  2  where sal in (select sal from emp where ename = 'SCOTT' or ename = 'WARD')
+
+17.
+SQL> select ename, job, sal, deptno from emp
+  2  where deptno = (select deptno from dept where dname = 'SALES');
+
+18.
+with dept_avg as (select avg(sal) avg_sal from emp group by deptno)
+select e.deptno, e.ename, e.sal, dt.avg_sal from emp e, dept_avg dt;
+
+19.
+with job_avg as (select avg(sal) avg_sal, job from emp group by job),
+dept_count as (select count(deptno) con_dept, deptno from emp group by deptno)
+select e.empno, e.ename, e.deptno, dc.con_dept, e.job, ja.avg_sal, e.sal 
+from emp e, job_avg ja, dept_count dc
+where e.job = ja.job and dc.deptno = e.deptno
+order by e.job asc;
+
+20.
+with job_avg as (select avg(sal) avg_sal, job from emp group by job)
+select e.empno, e.ename, e.deptno, e.job, e.sal, ja.avg_sal from emp e, job_avg ja
+where e.job = ja.job;
+
+21.
+select empno, ename, hiredate, sal from emp e
+where exists(select empno from emp et where e.empno = et.mgr);
+
+22.
+select empno, ename, job, deptno from emp e
+where not exists(select empno from emp et where e.empno = et.mgr);
+
+23. 
+select level, ename, job, mgr from emp
+connect by prior empno = mgr
+start with ename = 'BLAKE';
+
+24.
+select ename, job, mgr from emp where ename != 'BLAKE'
+connect by prior empno = mgr
+start with ename = 'BLAKE';
+
+
+

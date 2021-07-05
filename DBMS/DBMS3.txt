@@ -1,0 +1,272 @@
+-- 날짜에 사용하는 round/trunc 함수
+SQL> select round(sysdate, 'month'), trunc(sysdate, 'month') from dual;   // 기준인 형식(month)의 하위(날짜)에서 반올림 또는 버림
+
+ROUND(SY TRUNC(SY
+-------- --------
+21/06/01 21/06/01
+
+SQL> select sysdate + to_yminterval('02-02') from dual;  // 년-월
+
+SYSDATE+
+--------
+23/08/15
+
+6. 석차 함수(통계함수 내)
+--형식 : rank() over([partition by 그룹화컬럼] order by 컬럼명 [(asc)|desc]) "석차" 
+
+-- 이름, 급여, 급여석차를 추출, 석차는 부서별로 높은 순서대로 추출(단, 급여가 널인 사람은 제외)
+select saname, sapay, deptno, rank() over(partition by deptno order by sapay desc) as "석차" from sawon
+where sapay is not null;
+
+* 그룹함수
+--계산함수, 집계함수
+--sum, avg, max, min, count
+--group by와 함께 사용하며 group by에 대한 조건절은 having절을 사용
+--형식 : group by 컬럼,...
+
+SQL> select sum(sapay)/21, avg(nvl(sapay,0)), count(*), max(sapay), min(sapay) from sawon;  // avg, count는 주의!
+
+SUM(SAPAY)/21 AVG(NVL(SAPAY,0))   COUNT(*) MAX(SAPAY) MIN(SAPAY)
+------------- ----------------- ---------- ---------- ----------
+   2300.85714        2300.85714         21       5000        400
+
+-- 부서별로 급여합계를 추출
+-- 단, 10, 30번 부서만 추출  
+-- 단, 급여합계가 10000이상인 것만 추출
+select deptno, sum(sapay) from sawon
+--where deptno=10 or deptno=30
+group by deptno
+having  sum(sapay)>=10000;
+-----------------------
+select
+from
+where
+group by
+having
+order by
+-----------------------
+-직책별, 급여합계, 평균급여, 인원수를 추출
+select sajob 직책, sum(sapay) 급여합계, avg(sapay) 급여평균, count(*) 인원수 from sawon
+group by sajob;
+
+-성별, 직책별로 평균급여와 인원수, 최대급여를 추출
+-단, 사원은 제외하고 평균급여가 높은 순서대로 정렬하여 추출
+select sasex 성별, sajob 직책별, avg(sapay) 평균급여, count(*) 인원수, max(sapay) 최대급여 from sawon
+where sajob!='사원'
+group by sasex, sajob
+order by 평균급여 desc;
+
+-직책별, 부서별로 급여합계와 인원수를 추출
+-단, 10번 부서는 제외하고 인원수가 3명 이하인 것만 추출
+select sajob 직책, deptno 부서, sum(sapay) 급여합계, count(*) 인원수 from sawon
+where deptno!=10
+group by sajob,deptno
+having count(*)<=3;
+
+-입사년도별로 급여합계와 평균급여를 추출
+select to_char(sahire,'yyyy') 입사년도, sum(sapay) 급여합계, avg(sapay) 평균급여 from sawon
+group by to_char(sahire,'yyyy');
+
+- 5명씩 급여합계와 평균급여를 추출 (rownum 이용)
+select sum(sapay), avg(sapay) from sawon
+group by ceil(rownum/5);
+
+* rollup & cube
+-group by와 함께 사용하며 1차 또는 2차 집계도 추출하는 옵션
+-rollup : 1차 집계의 결과를 추출
+-cube : rollup + 2차집계의 결과를 추출
+
+SQL> select sasex 성별, sajob 직책별, sum(sapay) 급여합계  from sawon
+  2  group by rollup(sasex, sajob);	//
+
+성별 직책별       급여합계
+---- ---------- ----------
+남자 과장            12003
+남자 대리             1800
+남자 부장             5803
+남자 사원             4906
+남자 회장             5000
+남자                 29512		//
+여자 과장             3900
+여자 대리             4206
+여자 부장             3000
+여자 사원             7700
+여자                 18806		//
+
+성별 직책별       급여합계
+---- ---------- ----------
+                     48318		//
+
+12 개의 행이 선택되었습니다.
+
+SQL> select sasex 성별, sajob 직책별, sum(sapay) 급여합계  from sawon
+  2  group by cube(sasex, sajob);	//  4개의 select를 사용했어야...
+
+성별 직책별       급여합계
+---- ---------- ----------
+                     48318
+     과장            15903		//
+     대리             6006
+     부장             8803
+     사원            12606
+     회장             5000
+남자                 29512
+남자 과장            12003
+남자 대리             1800
+남자 부장             5803
+남자 사원             4906
+
+성별 직책별       급여합계
+---- ---------- ----------
+남자 회장             5000
+여자                 18806
+여자 과장             3900
+여자 대리             4206
+여자 부장             3000
+여자 사원             7700
+
+17 개의 행이 선택되었습니다.
+
+* grouping 함수
+-연산작업 없다
+-rollup or cube와 함께 사용되며, 추출 결과 행이 rollup or cube에 의한 결과 행인지(1), 일반 결과행인지(0)을 반환하는 함수
+
+* 컬럼 그룹화
+-조건명령(decode or case) + 그룹함수를 사용하여 구현
+
+-직책별 급여합계를 다음 출력 형식으로 추출하시오
+
+     부장       과장       대리       사원
+--------- ---------- ---------- ----------
+     8803      15903       6006      12606
+
+select 
+sum(decode(sajob,'이사',sapay,0)) 이사,
+sum(decode(sajob,'과장',sapay,0)) 과장,
+sum(decode(sajob,'대리',sapay,0)) 대리,
+sum(decode(sajob,'사원',sapay,0)) 사원 
+from sawon;
+
+-직책별 인원수를 다음의 출력 형식으로 추출하시오
+
+      부장       과장       대리       이사
+---------- ---------- ---------- ----------
+       1          2          3          0
+select 
+count(decode(sajob,'이사',sapay)) 이사,
+count(decode(sajob,'과장',sapay)) 과장,
+count(decode(sajob,'대리',sapay)) 대리,
+count(decode(sajob,'사원',sapay)) 사원 
+from sawon;
+
+select 
+sum(decode(sajob,'이사',1,0)) 이사,
+sum(decode(sajob,'과장',1,0)) 과장,
+sum(decode(sajob,'대리',1,0)) 대리,
+sum(decode(sajob,'사원',1,0)) 사원 
+from sawon;
+
+-직책별 부서별 급여합계를 다음의 출력 형식으로 추출하시오
+
+직책           부서10     부서20     부서30     부서40 직책별합계
+--------- ---------- ---------- ---------- ---------- ----------
+과장             4500       7400       4003          0      15903
+사원             3100       6800       2706          0      12606
+대리             1800          0       4206          0       6006
+회장             5000          0          0          0       5000
+부장             3000       3000       2803          0       8803
+          ---------- ---------- ---------- ---------- ----------
+부서합계        17400      17200      13718          0      48318   // compute속성
+
+select sajob 직책, 
+sum(decode(deptno,10,sapay,0)) 부서10,
+sum(decode(deptno,20,sapay,0)) 부서20,
+sum(decode(deptno,30,sapay,0)) 부서30, 
+sum(decode(deptno,40,sapay,0)) 부서40,
+sum(sapay) 직책별합계 from sawon
+group by sajob;
+
+break on report  // clear break : 속성제거
+compute sum label 부서합계 of 부서10 부서20 부서30 부서40 직책별합계 on 직책 report  // clear compute : 속성제거
+
+* Join(조인)
+--사용하는 컬럼이 두 개 이상의 테이블에 존재하는 경우 사용되는 고급 쿼리 기법
+--32개까지 테이블까지 가능
+--관계형(참조관계) 데이터 베이스 구현
+
+--종류
+1. Eque(inner) join	    : 조건절에 참인 행(데이터)만 추출되는 조인
+2. Outer join(left & right) : 조건절에 참인 행(데이터)과 마스터 테이블(중심이 되는 테이블)의 모든 데이터도 추출되는 조인
+3. Cross join	    : 데카르트의 곱, 카티션 프로덕트, 경우의 수
+		      사용되는 테이블간의 관계가 없는 경우(조건식 없음)=table*table 수만큼 
+-----------------
+4. Self join	    : 물리적으로 자기 자신의 테이블과 조인되는 경우
+
+--문법
+1. Ansi Join  : 서술형태의 문법, on저건절 사용 (많이 안씀)
+
+	* 조인되는 컬럼명 같은 경우 : 조건문이 없다! 테이블 별칭 불가!(self, outer 불가능)-> inner/eque join만 가능!
+	- natural join
+	 select saname, dname from sawon natural join dept;
+	- using join
+	 select sanamem, dname from sawon join dept using(deptno);
+
+2. T-SQL Join : 나열형태의 문법, where조건절 사용
+1). select ~ : 필요한 컬럼 list
+2). from ~ : 사용된 컬럼을 가진 table list나열
+3). where ~ : 참조관계를 조건식으로 표현(테이블수-1)
+
+--사원명, 부서번호, 부서명을 추출
+select s.saname, s.deptno, d.dname from sawon s, dept d
+where s.deptno=d.deptno;
+
+--고객명, 전화번호, 담당사원명을 추출. 단, 담당자가 없는 고객도 추출
+select g.goname, g.gotel, s.saname from gogek g, sawon s
+where g.godam = s.sabun(+);
+
+// Ansi join
+select g.goname, g.gotel, s.saname from gogek g left outer join sawon s
+on(g.godam = s.sabun);
+
+--사원명, 급여, 관리자명을 추출. 단, 관리자가 없는 사람도 추출
+select s.saname, s.sapay, m.saname 관리자면 from sawon s, sawon m
+where s.samgr=m.sabun(+);
+
+--부서(명)별로 급여합계를 추출
+select d.dname 부서명, sum(sapay) 급여합계 from dept d, sawon s
+where d.deptno=s.deptno(+)
+group by d.dname;
+
+--고객명, 전화번호, 담당자명, 담당자직책, 당장자부서명을 추출. 단, 담당자가 없는 고객도 추출
+select g.goname 고객명, g.gotel 전화번호, s.saname 담당자명, s.sajob 담당자직책, d.dname 담당자부서명 
+from gogek g, sawon s, dept d
+where g.godam=s.sabun(+) 
+   and s.deptno=d.deptno(+);
+
+// Ansi
+select g.goname 고객명, g.gotel 전화번호, s.saname 담당자명, s.sajob 담당자직책, d.dname 담당자부서명 
+from gogek g left outer join sawon s on(g.godam=s.sabun)
+	      left outer join dept d on(s.deptno=d.deptno);
+
+--부서명, 사원명, 사원직책, 관리자명, 관리자직책을 추출. 단, 관리자가 없는 사원도 추출
+select d.dname, s.saname, s.sajob, m.saname, m.sajob from dept d, sawon s, sawon m
+where d.deptno(+)=s.deptno 
+   and s.samgr=m.sabun(+); 
+
+--다음을 출력하시오
+직책           관리부     영업부     전산부     총무부 직책별합계
+---------- ---------- ---------- ---------- ---------- ----------
+과장             4500       7400       4003          0      15903
+사원             3100       6800       2706          0      12606
+대리             1800          0       4206          0       6006
+회장             5000          0          0          0       5000
+부장             3000       3000       2803          0       8803
+
+select s.sajob 직책, 
+sum(decode(d.dname,'관리부',s.sapay,0)) 관리부,
+sum(decode(d.dname,'영업부',s.sapay,0)) 영업부,
+sum(decode(d.dname,'전산부',s.sapay,0)) 전산부, 
+sum(decode(d.dname,'총무부',s.sapay,0)) 총무부,
+sum(s.sapay) 직책별합계 from sawon s, dept d
+where s.deptno=d.deptno
+group by sajob;

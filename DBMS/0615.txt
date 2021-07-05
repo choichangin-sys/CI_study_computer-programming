@@ -1,0 +1,280 @@
+-- 날짜에 사용하는 round/trunc 함수
+round 함수 : round([기준 날짜], [dd or mm or yy])
+=> 날짜를 반올림하는 함수
+trunc 함수  : trunc([기준 날짜], [dd or mm or yy])
+=> 날짜를 버림을 사용해 연식 계산에 좋은 함수
+
+select sysdate + to_yminterval('02-02') from dual; // 원하는 연도와 달을 더하는 것.
+
+6. 석차함수(통계함수 내)
+-- 형식 : rank() over([partition by 그룹화컬럼] order by 칼럼명 [asc ro desc]) "석차"
+
+-- 이름, 급여, 급여석차를 추출, 석차는 부서별로 높은 순서대로 추출
+SQL> select saname, sapay, deptno,rank() over(partition by deptno order by sapay desc) "석차" from sawon;
+
+-- 이름, 급여, 급여석차를 추출, 석차는 부서별로 높은 순서대로 추출. 단, null은 제외하라.
+SQL> select saname, sapay, deptno, rank() over(partition by deptno order by sapay desc) "석차" from sawon
+  2  where sapay is not null;
+
+* 그룹 함수
+* 계산함수, 집계함수
+
+select sum(sapay), avg(sapay), count(sapay), max(sapay), min(sapay) from sawon;
+// 다른 것은 큰 문제가 없지만 avg와 count와 같은 건 문제가 생긴다. 
+// (null은 연산을 하면 무조건 0이 나오게 한다.)
+
+select sum(sapay), avg(nvl(sapay, 0)), count(sapay), max(sapay), min(sapay) from sawon; // 이런 식으로 해결 가능
+
+select deptno, sum(sapay) from sawon; // 이 문장을 돌리면? 오류발생.
+why? => deptno은 여러 개가 나오는 복수개의 리턴값은 준다.
+       => 하지만 sum()은 여러 개의 값을 더한 단일개의 리턴값을 준다.
+
+해결방법 => SQL> select deptno, sum(sapay) from sawon
+                    2  group by deptno;
+
+group by의 조건문 => having
+from의 조건문 => where
+
+where로 할 수 있는 것은 having으로 하는 것. 그런데 왜 안하냐? => 비효율적이며 엄청난 메모리를 사용.
+=> 최악의 경우 DB 다운.
+
+--- 실행 순서 ---
+form (select ~)
+where
+group by
+having
+select 
+order by
+---------------------------
+
+-- 직책별, 급여합계, 평균급여, 인원수를 추출
+SQL> select sajob"직책", sum(sapay)"급여 합계", round(avg(sapay))"평균 급여", sum(sapay)/avg(sapay)"인원수" from sawon
+  2  group by sajob;
+==
+SQL> select sajob"직책", sum(sapay)"급여 합계", round(avg(sapay))"평균 급여", count(*)"인원수" from sawon
+  2  group by sajob;
+==
+SQL> select sajob"직책", sum(sapay)"급여 합계", round(avg(sapay))"평균 급여", count(sajob)"인원수" from sawon
+  2  group by sajob;
+
+-- 성별, 직책별로 평균급여와 인원수, 최대급여를 추출
+-- 단, 사원은 제외하고 평균급여가 높은 순서대로 정렬하여 추출
+SQL> select sasex, sajob, avg(sapay)"평균 급여", max(sapay)"최대 급여" from sawon
+  2  where sajob != '사원'
+  3  group by sasex, sajob
+  4  order by avg(sapay) desc;
+
+--직책별, 부서별로 급여합계와 인원수를 추출
+-단, 10번 부서는 제외하고 인원수가 3명 이하인 것만 추출
+SQL> select sajob, deptno, sum(sapay)"급여합계", sum(sapay)/avg(sapay)"인원수" from sawon
+  2  where deptno != 10
+  3  group by sajob, deptno
+  4  having sum(sapay)/avg(sapay) <= 3;
+==
+SQL> select sajob, deptno, sum(sapay)"급여합계", count(*)"인원수" from sawon
+  2  where deptno != 10
+  3  group by sajob, deptno
+  4  having count(*) <= 3;
+
+-- 입사년도별로 급여합계와 평균급여를 추출
+SQL> select to_char(sahire, 'yyyy')"입사년도", sum(sapay)"급여합계", round(avg(sapay))"평균급여" from sawon
+  2  group by to_char(sahire, 'yyyy');
+
+SQL> select rownum, sabun, saname from sawon;
+
+    ROWNUM      SABUN SANAME
+---------- ---------- ----------
+         1          1 홍길동
+         2          2 한국남
+         3          3 이순신
+         4          5 이순라
+         5          7 놀기만
+         6         11 류별나
+         7         14 채시라
+         8         17 이성계
+         9         13 무궁화
+        10         19 임꺽정
+        11         20 깨똥이
+
+=> rownum은 입력한 적이 없지만 있다. 그럼 무엇인가? 행의 번호이다. value가 아니기 때문에 1이 없다면 2가 있을 수 없다.
+=> where절에 쓸 수 있다. 공통점이 없는 것(예를 들면 5명씩)에 사용한다. (부서별이든, 직책별이든 그룹이 있어야하는데
+=> 없는 경우에 사용)
+
+-- 5명씩 급여합계와 평균급여를 추출
+SQL> select ceil(rownum/5), sum(sapay), avg(sapay) from sawon
+  2  group by ceil(rownum/5);
+
+* 컬럼그룹화 : 조건명령(decode, case) + 계산함수
+SQL> select sum(decode(sajob, '사원', sapay, 0)) 사원,
+  2  sum(decode(sajob, '대리', sapay, 0)) 대리,
+  3  sum(decode(sajob, '과장', sapay, 0)) 과장,
+  4  sum(decode(sajob, '부장', sapay, 0)) 부장 from sawon;
+
+-- 직책별 인원수
+SQL>select sum(decode(sajob, '사원', 1, 0)) 사원,
+sum(decode(sajob, '대리', 1, 0)) 대리,
+sum(decode(sajob, '과장', 1, 0)) 과장,
+sum(decode(sajob, '부장', 1, 0)) 부장 from sawon;
+==
+SQL>select count(decode(sajob, '사원', sapay)) 사원,
+count(decode(sajob, '대리', sapay)) 대리,
+count(decode(sajob, '과장', sapay)) 과장,
+count(decode(sajob, '부장', sapay)) 부장 from sawon;
+
+-- 직책별 부서별 금액합산을 하시오.
+SQL>  select sajob"직책", sum(decode(deptno, '10', sapay)) 부서10,
+  2  sum(decode(deptno, '20', sapay)) 부서20,
+  3   sum(decode(deptno, '30', sapay)) 부서30,
+  4   sum(decode(deptno, '10', sapay, '20', sapay, '30', sapay, 0)) "직책별 급여 합계" from sawon
+  5   group by sajob;
+직책           부서10     부서20     부서30 직책별 급여 합계
+---------- ---------- ---------- ---------- ----------------
+과장             4500       7400       4003            15903
+사원             3100       6800       2706            12606
+대리             1800                    4206             6006
+회장             5000                                       5000
+부장             3000       3000       2803             8803
+
+break on report
+compute sum label 부서합계 of 부서10 부서20 부서30 부서40 직책별합계 on 직책 report
+/
+
+// 위에 -- 직책별 부서별 금액합산을 하고 바로 위 문장을 입력하면 
+직책           부서10     부서20     부서30 직책별 급여 합계
+---------- ---------- ---------- ---------- ----------------
+과장             4500       7400       4003            15903
+사원             3100       6800       2706            12606
+대리             1800                    4206             6006
+회장             5000                                       5000
+부장             3000       3000       2803             8803
+               ---------- ---------- ----------
+부서합계        17400      17200      13718 // compute 속성
+// 이러한 형태로 나온다. (/로 입력해야함.)
+
+col [컬럼명] format a20 // 컬럼에 속성 주기
+clear col // 컬럼 속성 지우기
+
+* Join(조인)  *
+===== T-SQL Join =====
+=> 사용하는 컬럼이 두 개 이상의 테이블에 존재하는 경우 사용되는 고급 쿼리 기법
+=> 최대 32개까지 가능
+=> 관계형 데이터베이스 설계 가능
+1. 원하는 곳에서 컬럼 사용 (select)
+2. 사용한 컬럼을 가진 테이블이 있음 (from)
+3. 사용된 테이블 간에 관계가 있음.(100%는 아님) 그 관계를 조건식으로 표현
+
+=> 사원명, 부서번호, 부서명 추출 (이 때, 부서명은 다른 곳에 있음.)
+=> select s.saname, s.deptno, d.dname from sawon s, dept d
+=> where s.deptno = d.deptno
+
+-- 사원명, 부서번호, 부서명을 추출
+select s.saname, s.deptno, d.dname from sawon s, dept d
+where s.deptno = d.deptno;
+SANAME         DEPTNO DNAME
+---------- ---------- ----------
+홍길동             10 총무부
+한국남             20 영업부
+이순신             20 영업부
+이순라             20 영업부
+놀기만             20 영업부
+류별나             20 영업부
+채시라             20 영업부
+이성계             30 전산부
+무궁화             10 총무부
+임꺽정             20 영업부
+깨똥이             10 총무부
+
+1. Eque Join : 조건절에 참인 행(데이터)만 추출되는 조인
+2. Outer Join(left & right) : 조건절에 참인 행(데이터)과 마스터 테이블(중심이 되는 테이블)의 모든 데이터도 추출되는 조인
+3. Cross Join : 데카르트의 곱, 카티션 프로덕트, 경우의 수
+                   사용되는 테이블간의 관계가 없는 경우(조건식 없음)=table*table 수만큼 
+
+------------------
+4. Self Join : 물리적으로 자기 자신의 테이블과 조인되는 경우
+
+-- 고객명, 전화번호, 담당사원명을 추출. 단, 담당자가 없는 고객도 추출
+SQL> select g.goname, g.gotel, s.saname from gogek g, sawon s
+  2  where g.godam = s.sabun(+); 
+// 마스터 테이블이 gogek이므로 마스터 테이블을 제외한 것에 모든 것에 (+)을 넣는다. 
+
+GONAME     GOTEL          SANAME
+---------- -------------- ----------
+강민       343-1454       한국남
+류완       123-1674       이순신
+류민       123-1234       이순신
+똘이       176-7677       놀기만
+홍이       767-1234       무궁화
+쇠돌       673-6774       무궁화
+안나       767-1677       이미라
+철이       673-1674       이미라
+
+===== Ansi Join (많이 안씀) =====
+=> 서술형태의 문법, on저건절 사용
+=> 조인되는 컬럼명 같은 경우 : 조건문이 없다. 테이블 별칭 불가. (=> self, outer join 불가능)
+=> eque(inner) join만 가능
+
+Ansi Join 종류
+=> natunal join => select saname, dname from sawon natural join dept;
+=> using join => select saname, dname from sawon natural join dept;
+
+-- 고객명, 전화번호, 담당사원명을 추출. 단, 담당자가 없는 고객도 추출
+SQL> select g.goname, g.gotel, s.saname from gogek g left outer sawon s
+  on(g.godam = s.sabun); 
+
+-- 사원명, 급여, 관리자명을 추출. 단, 관리자가 없는 사람도 추출
+SQL> select sm.saname, sm.sapay, s.saname from sawon s, sawon sm
+  2  where sm.samgr = s.sabun(+);
+
+SANAME          SAPAY SANAME
+---------- ---------- ----------
+무궁화           3000 홍길동
+이성계           2803 홍길동
+한국남           3000 홍길동
+류별나           1600 한국남
+놀기만           2300 한국남
+이순신           3500 한국남
+채시라           3400 이순신
+이순라           1200 이순신
+임꺽정           2200 놀기만
+이미라           2503 이성계
+채송화           1703 이성계
+
+SANAME          SAPAY SANAME
+---------- ---------- ----------
+공부만           4003 이성계
+깨똥이           4500 무궁화
+류명한           1800 깨똥이
+최진실           2000 류명한
+무궁화           1100 류명한
+강감찬           1003 이미라
+김유신            400 이미라
+공부해           1303 이미라
+홍길동           5000
+
+// 자기 테이블에서 자기 테이블로 참조할 때 한 테이블에서 움직인다고 생각하기 보다
+// 똑같은 테이블 2개가 있다고 생각해야한다.
+
+-- 부서(명) / 직책 별로 급여합계를 추출
+SQL> select s.sajob"직책",
+  2  sum(decode(d.dname, '관리부', s.sapay, 0)) "관리부",
+  3  sum(decode(d.dname, '영업부', s.sapay, 0)) "영업부",
+  4  sum(decode(d.dname, '전산부', s.sapay, 0)) "전산부",
+  5  sum(decode(d.dname, '총무부', s.sapay, 0)) "총무부",
+  6  sum(decode(s.deptno, d.deptno, s.sapay, 0))"직책별 합계" from dept d, sawon s
+  7  where s.deptno = d.deptno(+)
+  8  group by s.sajob;
+
+-- 부서(명)별로 급여합계를 추출
+SQL> select d.dname "전산부", sum(sapay) 급여합계 from dept d, sawon s
+  2  where d.deptno = s.deptno(+)
+  3  group by d.dname;
+
+-- 고객명, 전화번호, 담당자명, 담당자직책, 당장자부서명을 추출. 단, 담당자가 없는 고객도 추출
+SQL> select g.goname, g.gotel, s.saname, s.sajob, d.dname from dept d, sawon s, gogek g
+  2  where g.godam = s.sabun(+) and s.deptno = d.deptno(+);
+
+-- 부서명, 사원명, 사원직책, 관리자명, 관리자직책을 추출. 단, 관리자가 없는 사원도 추출
+SQL> select d.dname, s.saname, s.sajob, sm.saname, sm.sajob from dept d, sawon s, sawon sm
+  2  where s.samgr = sm.sabun(+) and s.deptno = d.deptno(+);
+
+

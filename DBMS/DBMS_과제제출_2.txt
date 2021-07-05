@@ -1,0 +1,56 @@
+1. 사원 이름, 입사일 및 급여 검토일을 표시하라.
+금여 검토일은 여섯 달 근무 후 해당하는 첫 번째 월요일이다. 열 이름은 REVIEW로 하고,
+날짜는 "Sunday, the Seventh of September, 1981"과 같이 표시하라
+SQL> col review format a40
+SQL> select saname, sahire, 'Monday, ' || to_char(next_day(add_months(sahire, 6), '월'), '"The" ddsp "of" mmsp, yyyy')"REVIEW" from sawon;
+
+2. 각 사원의 이름을 표시하고, 근무 달 수(입사일로부터 현재까지의 달 수)를 계산하여 열 레이블을 MONTHS_WORKED로
+지정하여 표시한다. 결과는 정수로 반올림하여 표시하고 근무 달 수를 기준으로 정렬한다.
+=> 내림차순으로 정렬했음.
+SQL> select saname, round(months_between(sysdate, sahire), 0)"MONTHS_WORKED" from sawon
+  2  order by MONTHS_WORKED desc;
+
+3. 이름, 입사일 및 업무 시작 요일을 표시하고 열 이름을 DAY로 지정한다.
+Monday를 시작으로 해서 요일을 기준으로 결과를 정렬한다. (월요일부터 정렬하라는 뜻)
+SQL> select saname, sahire, to_char(sahire, 'd')"DAY" from sawon
+  2  order by DAY asc;
+
+4. 다음 테이블(출력 결과)과 같이 JOB 열의 값을 기준으로 모든 사원의 업무등급을 표시하는 질의를
+작성하라. (추출 컬럼은 알아서)
+=> 내림차순으로 정렬했으며 글자가 보이지 않아 E에 공백을 추가했음.
+SQL> select saname, decode(sajob, '회장', 'A', '부장', 'B', '과장', 'C', '대리', 'D', '사원', 'E       ') "업무등급" from sawon 
+  2 order by 업무등급 asc;
+
+5. 오늘 날짜를 (2013년 12월 20일 금요일) 형태로 추출하라.
+SQL> select sysdate, to_char(sysdate, 'yyyy"년 "mm"월 "dd"일" day')"오늘 날짜" from dual;
+
+6. 근무한 달의 근무일수를 추출하라. (추출 컬럼은 알아서)
+SQL> select saname, sahire,
+  2  floor(months_between(sysdate, sahire)) || '개월' as "근무기간"
+  3  from sawon;
+
+7. 사원의 근무한 총 근무일수를 추출하라. (추출 컬럼은 알아서)
+SQL> select saname, sahire,
+  2  floor(months_between(sysdate, sahire) * (365 / 12)) || '일' as "근무기간"
+  3  from sawon;
+
+8. 사원명, 입사일, 첫 달 근무일수(입사한 달의 근무한 일수)를 출력하라.
+SQL> select saname, sahire, last_day(sahire) - sahire"첫 달 근무일수" from sawon;
+
+9. 사원명, 입사일, 근무기간(XX년 XX개월)을 출력하라.
+SQL> col 근무기간 for a30
+SQL> select saname, sahire, floor(months_between(sysdate, sahire)/12) || '년 ' ||
+  2  floor(mod(months_between(sysdate, sahire),12)) || '개월' as "근무기간"
+  3  from sawon;
+
+10 사원명, 입사일, 근무기간(XXXX주 X일)을 출력하라.
+SQL> col 근무기간 format a30
+SQL> select saname, sahire, floor(floor(months_between(sysdate, sahire) * (365 / 12)) / 7) || '주 ' ||
+  2  floor(months_between(sysdate, sahire) * (365 / 12)) || '일' as "근무기간"
+  3  from sawon;
+
+
+
+select saname, sahire, floor(floor(months_between(sysdate, sahire) * (365 / 12)) / 7) || '주 ' ||
+floor(months_between(sysdate, sahire) * (365 / 12)) || '일' as "근무기간"
+from sawon;

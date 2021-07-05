@@ -1,0 +1,418 @@
+-- 이순신과 같은 부서에서 근무하는 사람들을 구하시오.
+SQL> select deptno from sawon where saname = '이순신';
+
+    DEPTNO
+----------
+        20
+////////////////////////////////////////////////////////이순신의 부서 알아내고/////////////////
+SQL> select deptno, saname from sawon
+  2  where deptno = (select deptno from sawon where saname = '이순신');
+    DEPTNO SANAME
+---------- ----------
+        20 한국남
+        20 이순신
+        20 이순라
+        20 놀기만
+        20 류별나
+        20 채시라
+        20 임꺽정
+
+* Sub Query(서브쿼리) *
+=> SQL명령 내에서 [값을 추출하기 위한 쿼리문]이 필요한 경우 사용되는 고급쿼리 기법.
+=> 서브쿼리는 반드시 ( )로 묶는다.
+=> 서브쿼리가 먼저 실행된 후, 외부쿼리와 비교/연산된다. (상관쿼리 제외)
+=> 서브쿼리의 결과는 값이다. = 조건과 함께 외부쿼리로 나오지 않는다. ***
+=> 서브쿼리만으로도 문법적으로 오류없다. (상관쿼리 제외)
+=> 최대 64개의 서브쿼리까지 사용 가능하다.
+
+-- 서브쿼리 종류
+1. 단일행 서브쿼리 : 서브쿼리의 결과 행이 단일*행(값)인 경우 (연산자 : >, <, =, !=, >=, <=)
+2. 다중행 서브쿼리 : 서브쿼리의 결과 행이 다중*행(값)인 경우 (in***, any, all, exits)
+-------------------------------------------------------------------------------------------------
+3. 다중컬럼 서브쿼리 : 서브쿼리의 결과 컬럼이 두 개 이상인 경우
+4. 상호관련 서브쿼리 :
+
+any : 추출 행값 중에서 1개 이상
+all : 값 > all 서브쿼리의 결과값 중에 제일 큰 값보다 큰 것인지 값 < all 제일 작은 값이 작은것인지
+=> (max, min 때문에 안씀.)
+
+-- 회사에서 평균급여보다 많이 받는 사람을 추출
+SQL> select saname, sapay from sawon
+  2  where sapay > (select avg(sapay) from sawon);
+
+SANAME          SAPAY
+---------- ----------
+홍길동           5000
+한국남           3000
+이순신           3500
+채시라           3400
+이성계           2803
+무궁화           3000
+깨똥이           4500
+공부만           4003
+이미라           2503
+
+-- 회사에서 급여를 가장 많이 받는 사람을 추출
+SQL> select saname, sapay from sawon
+  2  where sapay = (select max(sapay) from sawon);
+
+SANAME          SAPAY
+---------- ----------
+홍길동           5000
+
+-- 10번 부서에서 전체 사원들의 평균급여보다 많이 받는 사람을 추출
+SQL> select deptno ,saname, sapay from sawon
+  2  where deptno = 10 and sapay > (select avg(sapay) from sawon);
+
+    DEPTNO SANAME          SAPAY
+---------- ---------- ----------
+        10 홍길동           5000
+        10 무궁화           3000
+        10 깨똥이           4500
+
+-- 10번 부서에서 최대급여, 최소급여를 받는 사람을 추출
+select saname, sapay from sawon
+where (sapay = (select max(sapay) from sawon where deptno = 10) or 
+sapay = (select min(sapay) from sawon where deptno = 10)) and deptno = 10;
+
+-- '영업부'에서 가장 급여를 많이 받는 사람
+select d.dname, s.saname, max(decode(d.dname, '영업부', s.sapay))"영업부 최대 급여" from dept d, sawon s
+where s.deptno = d.deptno(+) and d.dname = '영업부' 
+and sapay = (select max(decode(d.dname, '영업부', s.sapay))  from dept d, sawon s
+where s.deptno = d.deptno(+))
+group by s.sapay, d.dname, s.saname;
+=============================위는 내가 한 것, 아래는 강사님이 한 것=============
+select saname, sapay from sawon
+where sapay = (select max(sapay) from sawon
+where deptno = (select deptno from dept where dname = '영업부'))
+and deptno = (select deptno from dept where dname = '영업부');
+
+-- 이순신과 부서와 직책이 같은 사람을 추출 (다중 컬럼)
+select deptno, sajob, saname from sawon
+where (deptno, sajob) = (select deptno, sajob from sawon where saname = '이순신');
+
+    DEPTNO SAJOB      SANAME
+---------- ---------- ----------
+        20 과장       이순신
+        20 과장       놀기만
+        20 과장       류별나
+
+// 추출되는 컬럼의 개수, 순서, 타입이 같아야 함.
+// 추출되는 컬럼과 비교하는 연산자는 같아야함.
+// NULL값일 때 문제가 생길 수 있다. (연산자 오류) 그렇기에 nvl를 통해 값을 주되 음수를 주는 것이다.
+
+-- 각 부서에서 최대급여를 받는 사람을 추출 (다중 컬럼)
+select deptno, sapay from sawon
+where (deptno, sapay) in (select deptno, max(sapay) from sawon group by deptno);
+
+    DEPTNO      SAPAY
+---------- ----------
+        10       5000
+        20       3500
+        30       4003
+
+-- 각 부서에서 각 부서의 평균 급여보다 많이 받는 사람을 추출 (상관쿼리)
+select deptno, saname, sapay from sawon s
+where sapay > (select avg(sapay) from sawon t
+where t.deptno = s.deptno);
+
+    DEPTNO SANAME          SAPAY
+---------- ---------- ----------
+        10 홍길동           5000
+        20 한국남           3000
+        20 이순신           3500
+        20 채시라           3400
+        30 이성계           2803
+        10 무궁화           3000
+        10 깨똥이           4500
+        30 공부만           4003
+        30 이미라           2503
+
+-- 각 부서에서 최대급여를 받는 사람을 추출 (상관쿼리)
+SQL> select deptno, saname, sapay from sawon s
+  2  where sapay = (select max(t.sapay) from sawon t
+  3  where t.deptno = s.deptno);
+===========아래는 실험, 위에는 강사님 버전==================================
+SQL> select s.deptno, s.saname, s.sapay from sawon s
+  2  where s.sapay = (select max(t.sapay) from sawon t
+  3  where t.deptno = s.deptno);
+
+    DEPTNO SANAME          SAPAY
+---------- ---------- ----------
+        10 홍길동           5000
+        20 이순신           3500
+        30 공부만           4003
+
+* 스칼라 서브쿼리 * (컬럼 서브쿼리) // 단일이 나와야함.
+=> select sabanem ( ), ...
+
+-- 사원명, 직책, 직책평균(자신이 속한 직책의 평균 급여)를 추출
+SQL> select saname, sajob,
+  2  (select avg(sapay) from sawon t where t.sajob = s.sajob)"평균급여"
+  3  from sawon s;
+
+SANAME     SAJOB        평균급여
+---------- ---------- ----------
+홍길동     회장             5000
+한국남     부장       2934.33333
+이순신     과장           3180.6
+이순라     사원          1575.75
+놀기만     과장           3180.6
+류별나     과장           3180.6
+채시라     사원          1575.75
+이성계     부장       2934.33333
+무궁화     부장       2934.33333
+임꺽정     사원          1575.75
+깨똥이     과장           3180.6
+
+* Top & N 서브쿼리 *
+=> 최대값 또는 최소값을 가진 일부의 행을 추출하는데 사용하는 서브쿼리 기법 (반드시 rownum 이용)
+=> from절이 가장 먼저 작동한다. 그렇기에 from 절에 가상의 테이블을 만들어서
+=> 정렬을 하는 등 작업을 하고 select를 통해 가상의 테이블에서 필요한 칼럼를 뽑아
+=> where를 통해 필요한 정보들만 뽑아낸다.
+=> from절 서브쿼리 : inline-view, 가상테이블 개념, 자원사용이 많은 복잡한 쿼리에
+=> 남용하는 경우 서능이 저하되는 특징이 있음.
+
+-- 회사에서 급여를 많이 받는 3명을 추출
+select saname, sapay from (select saname, sapay from sawon 
+order by sapay desc)
+where rownum <= 3;
+
+-- 회사에서 오래 근무한 5명을 추출
+select saname, sahire from (select saname, sahire from sawon
+order by sahire asc)
+where rownum <= 5;
+
+* exists 연산자 : not in의 해결 *
+=> not이 우선순위가 높아서 먼저 해석되기 때문에 문제가 생기는 것을 막아줌.
+=> 서브쿼리의 결과값이 존재하면 외부커리가 실행되고 결과값이 없다면 외부커리 실행 불가.
+
+ex) ===============================================
+
+SQL> select * from dept
+  2  where exists(select dname from dept where deptno = 90);
+
+선택된 레코드가 없습니다.
+
+SQL> select * from dept
+  2  where exists(select dname from dept where deptno = 20);
+
+    DEPTNO DNAME      LOC
+---------- ---------- ----------
+        10 총무부     서울
+        20 영업부     대전
+        30 전산부     부산
+        40 관리부     광주
+
+==================================================
+
+-- 부하직원이 없는 사람을 추출
+== samgr에 자신의 사번이 없는 사람.
+SQL> select saname, sajob from sawon s
+  2  where not exists(select sabun from sawon t where t.samgr = s.sabun);
+
+SANAME     SAJOB
+---------- ----------
+이순라     사원
+채송화     대리
+최진실     사원
+공부해     사원
+임꺽정     사원
+강감찬     사원
+채시라     사원
+김유신     사원
+무궁화     사원
+공부만     과장
+류별나     과장
+
+-- 부서별 급여합계가 전체 회사 평균 급여의 30%를 초과하는 부서명과 급여합계를 추출하라.
+select dname, sum(sapay) deept_total from sawon natural join dept
+group by dname
+having sum(sapay) > (select avg(sapay) from sawon) * 0.3;
+
+-- 평균으로 했음;;
+select d.dname"부서명", sum(s.sapay), avg(s.sapay)"부서급여합계" from dept d, sawon s
+where d.deptno = s.deptno 
+group by d.dname
+having avg(s.sapay) > ((select avg(sapay) from sawon) * 0.3);
+
+* with 명령 : from절 서브쿼리의 성능저하를 최소화하기 위한 명령 *
+=> 형식 :
+=> with table_name1 as (select ...),
+=>       table_name2 as (select ...)
+=>       .......
+=> select ~~~ from table_name1, table_name2
+=> 성능이 줄어드니 가상테이블을 외부에서 선언하고 오는 것.
+
+-- 부서별 급여합계가 전체 회사 평균 급여의 30%를 초과하는 부서명과 급여합계를 추출하라. (with 사용)
+with dept_tot as (select dname, sum(sapay) dept_total from sawon natural join dept group by dname),
+all_tot as (select avg(sapay) all_total from sawon)
+select dt.dname, dt.dept_total from dept_tot dt, all_tot at
+where dt.dept_total > (at.all_total  * 0.3);
+=> 컬럼의 별칭을 꼭 넣어야 본체에서 불러올 수 있음.
+
+* union 연산자 *
+=> 추출되는 컬럼의 수, 순서, 타입이 일치해야한다.
+1. union all : 단순히 연결해서 하나로 추출 ***
+2. union     : 중복행 제거 (합집합), 정렬작업 포함
+3. intersect : 중복행만 추출(교집합), 정렬작업 포함
+4. minus    : 상위 추출 결과 - 하위 추출 결과(차집합), 정렬 작업 포함
+
+* 정렬 작업은 필요할 때만 하는 것이 좋다 (메모리 잡아먹음) *
+
+* Level Query *
+=> 오라클만 존재, 카테고리 형식의 데이터로 설계된 경우, 조직도 형태인 경우 편리
+=> 단계별 쿼리 기법 (Level 1은 자기자신)
+
+-- 3번 사원의 하위레벨(부하직원)을 추출
+select level, sabun, saname, sajob from sawon [where sabun != 3]
+connect by prior sabun = samgr
+start with sabun = 3; // 기준
+=> [where sabun != 3] : 본인 제외
+
+-- '한국남'의 하위레벨을 추출
+SQL> select level, sabun, saname, sajob from sawon
+  2  connect by prior sabun = samgr
+  3  start with saname = '한국남';
+
+     LEVEL      SABUN SANAME     SAJOB
+---------- ---------- ---------- ----------
+         1          2 한국남     부장
+         2          3 이순신     과장
+         3          5 이순라     사원
+         3         14 채시라     사원
+         2          7 놀기만     과장
+         3         19 임꺽정     사원
+         2         11 류별나     과장
+
+-- '이순라'의 상위레벨을 추출
+SQL> select level, sabun, saname, sajob from sawon
+  2  connect by prior samgr = sabun
+  3  start with saname = '이순라';
+
+     LEVEL      SABUN SANAME     SAJOB
+---------- ---------- ---------- ----------
+         1          5 이순라     사원
+         2          3 이순신     과장
+         3          2 한국남     부장
+         4          1 홍길동     회장
+
+prior x = y
+=> x에서 y로 흘러간다.
+prior y = x
+=> y에서 x로 흘러간다.
+
+=> prior가 어디에 붙어있냐가 중요
+
+* 테이블 복사 *
+=> 형식 : create table table_name as select~~;
+=> 제약조건은 복사되지 않는다 (not null 제외)
+
+ex)==============================================
+create table dept_tot_bk
+as
+select dname, sum(sapay) 부서합계 from sawon natural join dept
+group by dname;
+================================================
+
+=> 테이블 구조만 복사하는 경우 : where절의 거짓으로 만들면 됨.
+ex)==============================================
+create table dept_tot_bk
+as
+select * 부서합계 from sawon where 1 = 2;
+================================================
+
+* DML
+=> 데이터 조작 명령, 데이터 변경 명령, 데이터 흐름 명령, 트랜젝션 명령, 일처리 명령
+=> 행***단위의 실행
+=> autocommit off
+=> insert, update, delete[select]
+
+1. insert
+=> insert into table_name values(값, 값,....);                //전체 컬럼값을 가진 입력, 행 추가
+=> insert into table_name(컬럼명, ...) values(값, ...); // 선택 컬럼값을 가진 입력***(컬럼의 개수나 순서를 몰라도 됨)
+=> insert into table_name(컬럼명,...) select ~~~;         //다중 행단위 입력
+
+2. delete
+=> delete [from] table_name where~;
+=> 테이블 전체 행을 삭제할 때 : truncate 명령 사용 (DDL)
+
+3. update
+=> update table_name set 컬럼명 = 값, ... where ~~~;
+
+-- sawon_ex, gogek_ex, dept_ex table 사본을 생성하여 작업
+SQL> create table sawon_ex
+  2  as
+  3  select * from sawon;
+
+SQL> create table gogek_ex
+  2  as
+  3  select * from gogek;
+
+SQL> create table dept_ex
+  2  as
+  3  select * from dept;
+
+-- 1. 고객의 담당자가 없는 고객은 13번 사원으로 변경
+SQL> update gogek_ex set godam = 13 where godam is null;
+
+-- 2. 13번 담당자를 갖는 고객의 담당자를 null로 변경
+SQL> update gogek_ex set godam = null where godam = 13;
+
+-- 3. sawon_10 테이블에 직책이 사원이며 부서가 관리부인 사원들을 sawon 테이블로부터 입력
+SQL> create table sawon_10 as select * from sawon where 1=2;
+
+SQL> insert into sawon_10 select * from sawon_ex
+  2  where deptno = 10 and sajob = '사원';
+
+-- 4. 이순신의 부서와 같은 사원들의 직책을 이순신의 직책으로 변경
+SQL> update sawon_ex set sajob = (select sajob from sawon_ex where saname = '이순신')
+  2  where deptno = (select deptno from sawon_ex where saname = '이순신')
+  3  and sajob = '사원';
+
+-- 5. 영업부 사원들의 급여를 10% 인상 변경
+SQL> update sawon_ex set sapay = (sapay * 1.1)
+  2  where deptno = 10;
+=============위는 내가 한 것, 아래는 강사님이 하신 것
+update sawon_ex set sapay = (sapay * 1.1)
+where deptno = (select deptno from dept_ex where dname = '영업부')
+
+-- 6. 영업부 부서의 직책이 사원인 직원들 중에서 회사의 평균급여보다 낮은 사원들을 삭제
+delete sawon_ex 
+where sajob = '사원' and
+deptno = (select deptno from dept_ex where dname = '영업부') and 
+sapay < (select avg(sapay) from sawon_ex);
+
+-- 7. 사원 테이블에서 영업부 사람들의 급여를 자신의 소속 직책의 평균 급여와 같게 변경
+update sawon_ex s
+set sapay = (select avg(sapay) from sawon_ex s1 where s.sajob = s1.sajob)
+where deptno = (select deptno from dept_ex where dname = '영업부');
+
+
+for i in mycur loop
+		-- 1. 급여순위 
+		if v_sal < i.sapay then
+			insert into sawon_result values(
+			sabun := i.sabun;
+			sname := i.saname;
+			hiredate := i.sahire;
+			sal := i.sapay;)
+			
+		elsif v_sal > i.sapay then
+			d
+		else
+			d
+		end if;
+	end loop;
+
+	
+
+	for i in mycur loop
+		-- 2. 근무기간
+		d		
+		d
+		d
+	end loop;
+
+
+
