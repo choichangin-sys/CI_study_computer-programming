@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            WriteLine(7 / 3); // 몫
+            WriteLine(7 % 3); // 나머지
+
+            WriteLine();
+
+            WriteLine(false && false); // AND
+            WriteLine(false && true);
+            WriteLine(true && false);
+            WriteLine(true && true);
+
+            WriteLine();
+
+            WriteLine(false || false); // OR
+            WriteLine(false || true);
+            WriteLine(true || false);
+            WriteLine(true || true);
+
+            WriteLine();
+
+            WriteLine(false ^ false); // XOR
+            WriteLine(false ^ true);
+            WriteLine(true ^ false);
+            WriteLine(true ^ true);
+        }
+    }
+}
