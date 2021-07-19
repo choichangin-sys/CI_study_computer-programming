@@ -1,0 +1,130 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+
+    class Program
+    {
+        class Baduk
+        {
+            AI ai;
+            public Baduk(AI ai) // 생성자
+            {
+                this.ai = ai; // 굳이 인수를 안만들어도 되는 방법. => 2.
+                WriteLine("대국을 시작합니다.");
+            }
+            /*
+            public void play() // 1. 인공지능이 업데이트 되면? => 문제점 발생. 
+            {
+                WriteLine("인공지능은 알파고입니다."); // 1. 자기가 할 일 딱 하나만 가지고 있어야함.
+                                                     // 1. 여러개면 문제점이 발생함 => 단일 기능에 규칙에 문제점 발생.
+                                                     // 1. 연관성이 있으면 안됨. 나누어줘야함.
+            }
+            */
+            public void play()
+            {
+                ai.play();
+            }
+            public void stop() // 2. 이렇게 하면 됨.
+            {
+                ai.stop();
+            }
+            /*
+            public void play(AI ag)
+            {
+                ag.play();
+            }
+            public void stop(AI ag)
+            {
+                ag.stop();
+            }
+            */
+        }
+        /*
+        abstract class AI
+        {
+            
+            public virtual void play() // 부모는 virtual 필수.
+            {
+                
+            }
+            
+            public abstract void play(); // abstract는 추상함수로 { }가 없어도 될 때 사용.
+                                         // 자식 클래스에 함수가 없으면 Error가 발생함.
+                                         // 고로 자식 클래스를에 함수를 쓸 때만 사용하는 것
+        }
+        */
+        interface AI
+        {
+            void play();
+            void stop();
+        }
+
+        /*
+        class AlphaGo : AI
+        {
+            public override void play() // 자식은 override 필수.
+            {
+                WriteLine("인공지능은 알파고입니다.");
+            }
+        }
+        class BetaGo : AI
+        {
+            public override void play() // 자식은 override 필수.
+            {
+                WriteLine("인공지능은 베타고입니다.");
+            }
+        }
+        */
+        class AlphaGo : AI
+        {
+            public void play() // 자식은 override 필수.
+            {
+                WriteLine("인공지능은 알파고입니다.");
+            }
+            public void stop() // 자식은 override 필수.
+            {
+                WriteLine("알파고가 점수를 계산합니다.");
+            }
+        }
+        class BetaGo : AI
+        {
+            public void play() // 자식은 override 필수.
+            {
+                WriteLine("인공지능은 베타고입니다.");
+            }
+            public void stop() // 자식은 override 필수.
+            {
+                WriteLine("베타고가 점수를 계산합니다.");
+            }
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            /*
+            Baduk baduk = new Baduk();
+            baduk.play(new AlphaGo()); // 정상 작동 되지만 문제점이 있는 코드다. => 1.
+            baduk.play(new BetaGo());
+            baduk.stop(new AlphaGo()); // 정상 작동 되지만 문제점이 있는 코드다. => 1.
+            baduk.stop(new BetaGo());
+            */
+
+            Baduk baduk1 = new Baduk(new AlphaGo());
+            baduk1.play();
+            baduk1.stop();
+
+            Baduk baduk2 = new Baduk(new BetaGo());
+            baduk2.play();
+            baduk2.stop();
+
+        }
+    }
+}
