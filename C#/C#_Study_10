@@ -1,0 +1,54 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Tiger { }
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            Tiger t1 = new Tiger();
+            Tiger t2;
+
+            //Tiger t2 = null; // 객체가 아니라는 의미. 
+
+            // 나중에 사용
+            t2 = new Tiger();
+
+            //int a = null; // Error 발생
+
+            //int b = 10;
+            //b = null; // Error 발생
+
+            // 경고 발생.
+            /*
+            int c = 10;
+            if (c == null)
+            {
+                WriteLine(1000);
+            }
+            */
+
+            // 객체가 아니라고 하는 방법은?
+            int? a = null; // 이렇게 하면 된다.
+                           // 이것을 nullable 형식이라고 한다.
+            int? b = 10;
+            b = null;      // 이런 식으로도 가능함.
+
+            // 이 식이 성립된다. 물론 c가 null이 아니므로 의미가 있는 것은 아니다.
+            // 그냥 이렇게 된다고 생각하자.
+            int? c = 20;
+            if (c == null)
+            {
+                WriteLine(100);
+            }
+        }
+    }
+}
