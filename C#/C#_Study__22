@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            ArrayList al = new ArrayList();
+            al.Add(10); // return 0
+            al.Add(20); // return 1
+
+            WriteLine(al.Add(30)); // return 2
+            // index의 값을 리턴함.
+
+            int pos = al.Add(40);
+            WriteLine(pos); // 3이 return됨.
+
+            // 결과 : 10 20 30 40
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+
+            // CRUD(elete)
+            al.Remove(30);
+            // 결과 : 10 20 40
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }WriteLine();
+
+            // 유효범위를 벗어나면 예외발생
+            // 결과 : 10 40
+            al.RemoveAt(1);
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+
+            // C(reate)RUD
+            // 결과 : 10 99 40
+            al.Insert(1, 99);
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+
+            // CRU(pdate)D
+            // 결과 : 10 88 40
+            al[1] = 88;
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+
+            // al.Clear(); => 전부 사라짐.
+            WriteLine(al.Count);
+
+            WriteLine(al.Contains(88)); // 있으므로 True
+            WriteLine(al.Contains(77)); // 없으므로 False
+
+            WriteLine(al.IndexOf(88)); // 있으므로 번호 리턴
+            WriteLine(al.IndexOf(77)); // 없으므로 -1 리턴
+        }
+    }
+}
