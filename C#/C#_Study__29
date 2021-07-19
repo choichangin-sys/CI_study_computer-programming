@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    { 
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            int input;
+
+            while (true)
+            {
+                Write("입력하세요! : ");
+                input = int.Parse(ReadLine());
+                WriteLine("input입니다 : {0}", input);
+                if (input % 2 == 1)
+                {
+                    break;
+                }
+                else
+                {
+                    WriteLine("짝수입니다. 홀수를 입력하세요.");
+                }
+            }
+
+            int up = 0;
+            int down = input - 2;
+
+            for (int i = 0; i < (input / 2) + 1; i++)
+            {
+                for (int k = (input / 2); k > i; k--)
+                {
+                    Write("  ");
+                }
+
+                for (int j = 0; j <= up; j++)
+                {
+                    Write("* ");
+                }
+                up += 2;
+                WriteLine();
+            }
+
+            for (int a = 0; a < (input / 2); a++)
+            {
+                for (int b = 0; b <= a; b++)
+                {
+                    Write("  ");
+                }
+
+                for (int c = 0; c < down; c++)
+                {
+                    Write("* ");
+                }
+
+                down -= 2;
+                WriteLine();
+            }
+
+            WriteLine();
+
+            int q = input / 2;
+
+            for (int i = -q; i <= q; i++)
+            {
+                for (int j = -q; j <= q; j++)
+                {
+                    int ii = Math.Abs(i);
+                    int jj = Math.Abs(j);
+
+                    Write("{0}", (ii + jj <= q) ? "* " : "  ");
+
+                }
+                WriteLine();
+            }
+
+        }
+    }
+}
+/*
+
+***8
+**888
+*88888
+
+*/
