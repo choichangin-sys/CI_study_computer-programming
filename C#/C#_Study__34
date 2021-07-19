@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    { 
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            Queue q = new Queue();
+            q.Enqueue("Msg 1");
+            q.Enqueue("Msg 2");
+            q.Enqueue("Msg 3");
+            WriteLine(q.Count);
+        
+            while(q.Count != 0)
+            {
+                string s = q.Dequeue().ToString();
+                WriteLine(q.Count + " " + s);
+            }
+            WriteLine("exit");
+
+            q.Enqueue("Msg 1");
+            q.Enqueue("Msg 2");
+            q.Enqueue("Msg 3");
+            string s1 = q.Peek().ToString();
+            WriteLine(q.Count + " " + s1);
+
+            // 큐를 비운다.
+            //q.Clear();
+            WriteLine(q.Count);
+            WriteLine(q.Contains("Msg 3"));
+            WriteLine(q.Contains("Msg 4"));
+
+            WriteLine("----------------------------------------------------------");
+            object[] ar = q.ToArray();
+            WriteLine(q.Count);
+            foreach (string item in ar)
+            {
+                WriteLine(item);
+            }
+            q.Clear();
+            ArrayList al = new ArrayList();
+            al.Add("Msg 10");
+            al.Add("Msg 20");
+            al.Add("Msg 30");
+
+            Queue q1 = new Queue(al);
+            WriteLine(q1.Count);
+            q.Enqueue(al);
+            WriteLine(q.Count);
+
+        }
+    }
+}
