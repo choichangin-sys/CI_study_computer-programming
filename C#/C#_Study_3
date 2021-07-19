@@ -1,0 +1,33 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // Console.WriteLine();
+            WriteLine("콘솔 생략 성공");
+            WriteLine("wl만 누르면 사용 할 수 있게 됨.");
+
+            // WriteLine("%d %d\n", 10, 20); // printf의 방식이다.
+            WriteLine("{1}독{0}수{1}리{0}\n", 10, 20); // C#에서 사용하는 방식
+
+            WriteLine("독{0:d4}수{1:d3}리\n", 10, 20); // {0:d4}는 자리수 설정. 빈 자리는 0으로 채운다.
+
+            WriteLine("독{0:x}수{1:x}리\n", 10, 20); // {0:x}는 16진수로 보기.
+
+            Clear(); // Clear 앞에(기존의) 콘솔에 쓴 글자들을 지운다.
+            WriteLine("호랑이"); // {0:x}는 16진수로 보기. 
+
+
+        }
+    }
+}
