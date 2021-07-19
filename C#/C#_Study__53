@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            /*
+            // string 타입일 뿐이다.
+            string a = "1000";
+
+            // 컴파일 할 때 타입이 결정된다.
+            // 컴파일이 끝나면 string 타입이다.
+            var b = "2000";
+            // b = 3000; // Error 발생.
+
+            // 컴파일 할 때 타입이 결정된다.
+            // var타입하고 같지만 차이점이 있다.
+            // 하지만 var 타입은 타입을 바꿀 수 없다. 
+            // object 타입은 타입을 바꿀 수 있다.
+            object c = "3000";
+            c = 4000; // 허용하며 컴파일 할 때 마지막에 타입을 string에서 int로 체인지함.
+
+            // 실행할 때 타입이 결정된다.
+            dynamic d = "5000";
+            d = 6000; // 정수타입으로 변경됨.
+            string str = d; // Error가 발생해야하는데 발생을 안함.
+                            // 그게 이상하다. 정수타입인데 왜 발생을 안하지?
+                            // dynamic이 타입을 결정해주기 때문.
+            */
+            /*************************************************************************************/
+
+            string e = "tiger";
+            WriteLine(e.Length);
+
+            string f = null;
+            //WriteLine(f.Length);
+            if (f != null) // 방어적 프로그래밍, 필수적인 것.
+            {
+                WriteLine(f.Length);
+            }
+
+            // 방어적 프로그래밍 때문에 계속 길어지는 것을 방지하는 것.
+            string g = null;
+            //string g = "tiger";
+            WriteLine(g?.Length); // null이 아니면 값을 출력하고 null이여도 Error 발생을 하지마라. 
+                                  // 엘비스 문법
+
+            int[] ar = null;
+            WriteLine(ar?[0]);
+
+            // int 타입은 null을 갖는 경우가 없다.
+            // 그러나 그렇게 하고 싶으면 어떻게 하는가?
+
+            int? a = null; // C#에서 어차피 타입도 객체! 그렇기에 이런 식으로 가능!
+            WriteLine(a ?? 10); // null 일 때 10 출력.
+
+            int? b = 20; // C#에서 어차피 타입도 객체! 그렇기에 이런 식으로 가능!
+            WriteLine(b ?? 10); // null 일 때 10 출력.
+
+            int[] arr = new int[5];
+            int[] brr = new int[] { 3, 4, 5 };
+            int[] crr = { 3, 4, 5 };
+        }
+    }
+}
