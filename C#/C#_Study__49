@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Tiger
+    {
+        public int money = 30;
+        public int shape = 20;
+
+        public void m1()
+        {
+            WriteLine(1);
+            Lion lion = new Lion();
+            // lion.m2(new Tiger());
+            lion.결혼해줘(this);
+        }
+        
+    }
+    class Lion
+    {
+        public void 결혼해줘(Tiger t)
+        {
+            WriteLine(t.money + t.shape);
+            if (t.money > 20)
+            {
+                WriteLine("ok");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Tiger tiger = new Tiger();
+            tiger.m1();
+        }
+    }
+}
