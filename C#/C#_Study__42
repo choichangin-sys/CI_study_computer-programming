@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Tiger
+    {
+        private static Tiger instance = null; // 함수 안에서만 쓰기 때문에 private, 외부에서 사용하기 위해 static
+                                              // 1. 일반적으로 null하고 같이 씀.
+                                             
+        private Tiger() // 클래스에서만 쓸 수 있음. 즉, 문법오류 발생!
+        {
+            WriteLine(1);
+        }
+        /*
+        public static void getInstance() // static 있어야함.
+        {
+            if (instance == null) // 1. 한 번 null일 때 만들어지고 주소를 받으면 다시 못만들어짐.
+            {
+                WriteLine(1000);
+                instance = new Tiger();
+            }
+        }
+        */
+        public static Tiger getInstance() // 2. 타이거 타입으로 선언.
+        {
+            if (instance == null) // 1. 한 번 null일 때 만들어지고 주소를 받으면 다시 못만들어짐.
+            {
+                WriteLine(1000);
+                instance = new Tiger();
+            }
+
+            return instance;
+        }
+
+        int num;
+        public int Num { get; set; }
+    }
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // 1. 객체를 1개 이상 만들지 마라. 
+            // 객체가 1개만 있어도 프로그램을 만드는데 전혀 문제가 발생하지 않는다.
+            // 1개 이상 만들면 쓸대 없는 메모리, 리소스 낭비가 발생한다.
+            // 프로그래머가 실수든 아니든을 떠나 클래스(객체)를 한 개만 만드는 것. 그것이 싱글톤 패턴이다.
+
+            // private이면 Error 발생.
+            // Tiger t1 = new Tiger(); // private이 있으면 객체 사용이 불가! 그렇기에 쓰고 있는지 않쓰고 있는지 알 수 있음.
+            // Tiger t2 = new Tiger(); // 만들고 안쓰면 그만인데 왜? => 모르고 쓰면 어쩔건데 or 안쓸건데 왜 만듬? 
+            
+            // 함수를 만든 것이지 객체를 만든 것이 아니다.
+            //Tiger.getInstance();
+            //Tiger.getInstance(); // 기존의 메모리를 삭제 후 재생성. 
+
+            // 한 번 만든 객체를 끝까지 사용하는 것이 싱글톤 패턴이다.
+            // 해결 방법은? => 1.
+
+            // void면 리턴 값이 없음. 리턴으로 받아야하는데 Tiger 타입이야하므로 => 2.
+            Tiger t1 = Tiger.getInstance();
+            Tiger t2 = Tiger.getInstance();
+
+            WriteLine(t1.GetHashCode());
+            WriteLine(t2.GetHashCode());
+
+            t1.Num = 2000;
+            WriteLine(t2.Num);
+
+            // 엄청 큰 클래스를 만들 때 싱글톤 패턴을 사용. (대부분 프레임 워크, 한 번만 만들면 되는 것을 사용)
+        }
+    }
+}
