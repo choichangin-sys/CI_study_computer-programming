@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    {
+        // 리턴 X, 전달함수 X
+        static void f1() { }
+
+        // 리턴 X, 전달함수 O
+        static void f2(int a, string s) { }
+
+        // 리턴 O, 전달함수 X
+        static int f3() { return 100; }
+
+        // 리턴 O, 전달함수 O
+        static int f4(int num) { return 100; }
+
+        // void f5(string s, ... )
+        // int printf(string s, ... ); => 가변 데이터 받기.
+        static void f5(string s, params int[] p)
+        {
+            WriteLine(s);
+            int sum = 0;
+            foreach (var item in p)
+            {
+                sum += item;
+            }
+            WriteLine(sum);
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            f5("호랑이"); // 모든 인자를 넣지 않다도 된다. 가변인 경우에.
+            f5("호랑이", 20, 30, 40);
+        }
+    }
+}
