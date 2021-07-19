@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void m1(int num)
+        {
+            int check;
+
+            for (int i = 0; i < 32; i++)
+            {
+                check = 1 << (31 - i);
+                if (i % 4 == 0 && i != 0)
+                {
+                    Write(" ");
+                }
+                Write((num & check) == 0 ? 0 : 1);
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            int num = 0x7f3c7b4d;
+            m1(num);
+            WriteLine();
+            //goto // 다중for에서 원하는 일(원하는 문자, 글 등)을 해결하고 빠져 나올 때 사용.
+            // goto마저 안쓰려면? 함수로 만들고 찾는 순간 return을 통해 탈출.
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    // 검색
+                    if (i * 4 + j == 6)
+                    {
+                        goto FIND;
+                    }
+                }
+            }
+            FIND:
+                WriteLine(1);
+        }
+    }
+}
