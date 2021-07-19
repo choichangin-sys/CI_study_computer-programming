@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            int[] ar1 = new int[3];
+            int[] ar2 = new int[] { 10, 20, 30 };
+            int[] ar3 = { 10, 20, 30 };
+
+            WriteLine(ar1);
+            for (int i = 0; i < ar2.Length; i++)
+            {
+                WriteLine(ar2[i] + " ");
+            }WriteLine();
+
+            // item, value, data
+            foreach (var item in ar2)
+            {
+                Write(item + " ");
+            }WriteLine();
+
+            // 공유(참조)
+            // 얇은 복사
+            int[] ar4 = ar2;
+            ar4[0] = 999;
+            WriteLine(ar2[0]);
+
+            int[] ar5 = (int [])ar2.Clone();
+            ar5[1] = 888;
+            WriteLine(ar2[1]);
+
+            int[,] ar6 = new int[2, 3]; // ar[2][3] 
+            ar6[0, 0] = 1;
+            ar6[0, 1] = 2;
+            ar6[0, 2] = 3;
+            ar6[1, 0] = 4;
+            ar6[1, 1] = 5;
+
+            foreach (int item in ar6)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+
+            WriteLine();
+
+            Clear();
+            WriteLine(ar6.Length);
+            WriteLine(ar6.GetLength(0));
+            WriteLine(ar6.GetLength(1));
+
+            for (int i = 0; i < ar6.GetLength(0); i++)
+            {
+                for (int j = 0; j < ar6.GetLength(1); j++)
+                {
+                    WriteLine(ar6[i, j] + " ");
+                }
+                WriteLine();
+            }
+
+            // ----------------------------------------------
+
+            string numStr = "";
+
+            for (int i = 1; i <= 5; i++)
+            {
+                numStr += i.ToString();
+            }
+            WriteLine(numStr);
+        }
+    }
+}
