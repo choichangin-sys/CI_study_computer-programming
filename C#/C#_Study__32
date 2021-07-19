@@ -1,0 +1,110 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    { 
+        static double DegreeToRadian(double degree)
+        {
+            return Math.PI * degree / 180.0;
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // 쌍을 이룬다.
+            // {1, 2} 1 : key 2 : value
+            // Create
+            Hashtable user = new Hashtable();
+            user.Add("1", "호랑이");
+            user.Add("2", "코끼리");
+            user.Add("3", "독수리");
+
+            WriteLine(user.Count);
+
+            // Delete
+            // 키를 이용하여 제거가 되어야 한다.
+            user.Remove("2");
+
+            WriteLine(user.Count);
+
+            //user.Clear();
+            //WriteLine(user.Count);
+
+            // 검색 Find
+            WriteLine(user.Contains("1")); // Ture
+            WriteLine(user.Contains("2")); // False
+
+            // Read
+            WriteLine(user["1"]); // 나옴.
+            WriteLine(user["2"]); // 안나옴.
+
+            user.Add("4", "돌고래");
+            ICollection keys = user.Keys;
+            ICollection values = user.Values;
+
+            foreach (var key in keys)
+            {
+                Write(key + " ");
+            }
+            WriteLine();
+
+            foreach (var value in values)
+            {
+                Write(value + " ");
+            }
+            WriteLine();
+
+            // 주의
+            // user.Add(null, "돌고래");
+
+            // 갱신
+            user["1"] = "실험1";
+            user["2"] = "실험2";
+
+            foreach (var value in values)
+            {
+                Write(value + " ");
+            }
+            WriteLine();
+
+            WriteLine(user["2"]);
+            WriteLine(user["2"].ToString()); // 정석적 방법
+
+            string s = user["2"].ToString();
+            WriteLine(s);
+
+            foreach (DictionaryEntry item in user)
+            {
+                //WriteLine("{0} \t {1}", item.Key, item.Value);
+                WriteLine($"{item.Key} \t {item.Value}");
+            }
+
+            Clear();
+            
+            foreach (var item in user.Values)
+            {
+                WriteLine(item);
+            }
+
+            foreach (var item in user.Keys)
+            {
+                WriteLine(item);
+            }
+
+            WriteLine(user.ContainsValue("실험2")); // True, 있는 값.
+            WriteLine(user.ContainsValue("실험3")); // False, 없는 값.
+
+            // 익셉션이 발생, 키 값은 고유해야하기 때문
+            //user.Add("1", "실험4");
+        }
+    }
+}
