@@ -1,0 +1,43 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            Guid id1 = Guid.NewGuid();
+            WriteLine(id1);
+
+            string id2 = Guid.NewGuid().ToString("D"); // 넣나 안넣나 똑같다.
+            WriteLine(id2);
+
+            string id3 = Guid.NewGuid().ToString("N"); // "-"를 빼고 만들어줌
+            WriteLine(id3);
+
+            string id4 = Guid.NewGuid().ToString("B"); // { } 안에 들어감
+            WriteLine(id4);
+
+            string id5 = Guid.NewGuid().ToString("P"); // ( ) 안에 들어감
+            WriteLine(id5);
+
+            int num = 0x1234abcd;
+            WriteLine(Convert.ToString(num, 2));  // 2진법으로 나타내기
+            WriteLine(Convert.ToString(num, 8));  // 8진법으로 나타내기
+            WriteLine(Convert.ToString(num, 10)); // 10진법으로 나타내기
+            WriteLine(Convert.ToString(num, 16)); // 16진법으로 나타내기
+
+            string s = Convert.ToString(num, 2);
+            WriteLine(s.PadLeft(32, '0'));
+        }
+    }
+}
