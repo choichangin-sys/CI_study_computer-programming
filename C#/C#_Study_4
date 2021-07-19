@@ -1,0 +1,39 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // type
+            byte a1; // 0~255
+            sbyte a2; // -128~127
+            short a3; // +- 3만정도
+            ushort a4; // 양수만 가능함. 약 6만
+            int a5; // +- 가능
+            uint a6; // unsigned int(이거 맞나..) 줄임이라고 생각하면 됨.
+            long a7;
+            ulong a8;
+
+            char a9 = '한'; // 문자 전문용. C에서는 1 Byte지만 C#에서는 2 Byte이다. 유니코드 체재임.
+
+            float a10 = 3.14f; // 4 Byte이며 이때 꼭 f를 붙쳐야한다.
+            double a11 = 3.14; // 8 Byte이며 이때는 f를 안붙친다.
+            decimal a12 = 3.14m; // 16 Byte이며 이때 꼭 m을 붙쳐야한다. C#에서 새로 나온 type이다.
+
+            bool a13 = false; // 0 : false과 1 : true이다.
+
+            // 표현상으로 변수라고 하지만 정확하게 이야기하면 각각 객체이다.
+
+            WriteLine(byte.MaxValue); // <= 객체라는 증거. ( .MaxValue가 되므로 )
+        }
+    }
+}
