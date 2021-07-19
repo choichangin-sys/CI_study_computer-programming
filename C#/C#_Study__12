@@ -1,0 +1,46 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            char a = 'A';
+            char b = (char)65;
+            int c = 65;
+            int d = (int)'A';
+
+            WriteLine((int)a);
+            WriteLine((int)b);
+            WriteLine((char)c);
+            WriteLine((char)d);
+
+            char? e;
+            e = 'A';
+            WriteLine(e == null ? (int)e : (char)e);
+
+            string s1 = null;
+            string s2 = "호랑이";
+            WriteLine(s2);
+            s2 = "코끼리"; // 값이 갱신되는게 아니라 새로 만들어지는 것이다.
+                          // 기존의 s2메모리를 삭제하고 새로운 메모리를 잡고 저장하는 것.
+            WriteLine(s2);
+            s2 += "독수리"; // 기존의 s2메모리를 삭제하고 새로운 메모리를 잡고 저장하는 것. 즉, 새로운 객체 생성.
+            WriteLine(s2);
+
+            StringBuilder s; // 위와 다르게 실제로 갱신하는 것이다.
+
+            string s3 = new string('-', 30); 
+            WriteLine(s3);
+            WriteLine(new string('*', 30));
+        }
+    }
+}
