@@ -1,0 +1,51 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            Random rnd = new Random();
+            int evenct = 0, oddct = 0;
+            int maxEven = 0, maxOdd = 0;
+
+            for (int i = 0; i < 10; i++)
+            {
+                int num = rnd.Next(2);
+                Write(num + " ");
+                if (num == 0)
+                {
+                    oddct = 0;
+                    evenct++;
+                    if (evenct > maxEven)
+                    {
+                        maxEven = evenct;
+                    }
+                }
+                else
+                {
+                    evenct = 0;
+                    oddct++;
+                    if (oddct > maxOdd)
+                    {
+                        maxOdd = oddct;
+                    }
+                }
+            }
+            WriteLine();
+
+            WriteLine($"O : {maxEven}이고 X는 {maxOdd} ");
+            WriteLine();
+        }
+    }
+}
