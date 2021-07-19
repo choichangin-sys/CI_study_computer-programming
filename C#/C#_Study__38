@@ -1,0 +1,52 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            string s = "무궁화 꽃이 피었습니다.";
+            char[] ar = s.ToCharArray();
+
+            foreach (var item in ar)
+            {
+                Write(item);
+            }
+            WriteLine();
+
+            Array.Reverse(ar);
+            WriteLine(ar);
+
+            char[] ar1 = new char[ar.Length];
+
+            for (int i = 0; i < ar.Length / 2; i++)
+            {
+                char temp;
+                temp = ar[i];
+                ar[i] = ar[ar.Length - 1 - i];
+                ar[ar.Length - 1 - i] = temp;
+            } 
+            WriteLine(ar);
+            WriteLine();
+
+	for (int i = 0; i < ar.Length; i++)
+            {
+                ar1[i] = ar[ar.Length - 1 - i];
+
+            }
+            WriteLine(ar1);
+            WriteLine();
+        }
+        }
+    }
+}
