@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Program
+    {
+        enum APPLE
+        {
+            일, 월, 화, 수, 목, 금, 토
+        };
+
+        static void Main(string[] args)
+        {
+            WriteLine(DateTime.Now.DayOfWeek);
+            WriteLine((int)DateTime.Now.DayOfWeek);
+
+            string[] str = new string[]
+            {
+                "일", "월", "화", "수", "목", "금", "토"
+            };
+
+            int dw = (int)DateTime.Now.DayOfWeek;
+            WriteLine(str[dw] + "요일");
+
+            APPLE app = (APPLE)dw;
+            WriteLine(app + "요일");
+
+            WriteLine("{0} {1}", 10, "호랑이"); // 둘이 같다.
+            string s = string.Format("{0} {1}", 10, "호랑이"); // 둘이 같다.
+            WriteLine(s);
+
+
+            for (int i = 0; i < 10; i++)
+            {
+                string FileName = string.Format("{0:D4}.BMP", i);
+                
+                // file open(FileName, "read")
+                WriteLine(FileName);
+            }
+            string name = "이순신";
+            int age = 20;
+            WriteLine($"{name}{(age > 17 ? "성인" : "미성년")}");
+
+            int a = 0, b = 0, num = 0;
+            //num % 2 ? a++ : b++; // Error 발생
+            // 과거의 사망연산은 문제가 없었다.
+            // 현대의 사망연산은 받는 것이 있어야한다. 
+            // 그렇다면 해결 방법은?
+
+            _ = num % 2 == 0 ? a++ : b++; // _는 받을 것이 없다는 의미!
+
+
+        }
+    }
+}
