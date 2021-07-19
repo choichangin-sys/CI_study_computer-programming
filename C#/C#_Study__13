@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            string a = "호랑이";
+            string b = "코끼리";
+            string c = a + b;
+            WriteLine(c);
+
+            string d = "독수리1";
+            string e = "독수리2";
+            e += d;
+            WriteLine(e);
+
+            WriteLine();
+
+            bool b1 = "호랑이" == "호랑이";
+            WriteLine(b1);
+            WriteLine("호랑이1" == "호랑이2");
+
+            string s1 = "tiger";
+            string s2 = null;
+            WriteLine(s1 == null ? "널" : s1);
+            WriteLine(s1 ?? "널");
+            WriteLine(s2 == null ? "널" : s2);
+            WriteLine(s2 ?? "널");
+
+            // 문자열 >> 숫자
+            string s3 = "1000";
+            int n3 = Convert.ToInt32(s3);
+            WriteLine(n3+1);
+
+            int n4 = int.Parse(s3); // Parse : 구문 분석을 한다는 의미
+            WriteLine(n4 + 1);
+
+            // 숫자 >> 문자열
+            int n5 = 1234;
+            WriteLine(n5.ToString() + "호랑이");
+            WriteLine( 123.ToString() ); // 문자를 그냥 써도 됨. 딱히 문자로 선언을 안해도 알아서 인식
+            WriteLine( 1234.ToString() );
+            WriteLine(n5.ToString("n0")); // 숫자를 3자리씩 끊어서 읽어줌.
+            WriteLine(n5.ToString("x"));
+
+            int n6 = 15;
+            WriteLine(n6.ToString("000000"));
+
+            string s4 = string.Format("호{0}랑{1}이", 1000, 2000);
+            WriteLine(s4);
+
+            string s5 = "   한   글   ";
+            WriteLine(s5.TrimStart()); // 한 앞에 있는 space가 제거됨.
+            WriteLine("-----");
+
+            WriteLine(s5.TrimEnd()); // 글 뒤에 있는 space가 제거됨.
+            WriteLine("-----");
+
+            WriteLine(s5.Trim()); // 앞뒤에 있는 space가 제거됨.
+            WriteLine("-----");
+            // 중간의 space를 지울 수 있는 방법은 없다.
+
+            Clear();
+
+            string s6 = s5.Trim();
+            WriteLine(s5);
+            WriteLine(s6);
+
+            string s7 = "1";
+            string s8 = "10";
+            string s9 = "100";
+            string s10 = "1000000000000000";
+            WriteLine(s7.PadLeft(8)); // 왼쪽부터 8칸 떨어진 곳에서부터 시작
+            WriteLine(s8.PadLeft(8));
+            WriteLine(s9.PadLeft(8));
+            WriteLine(s10.PadLeft(8)); // over시 평상시랑 다름이 없음.
+            WriteLine("-----");
+            WriteLine(s7.PadRight(8)); // 오른쪽부터 8칸 떨어진 곳에서부터 종료
+            WriteLine(s8.PadRight(8));
+            WriteLine(s9.PadRight(8));
+            WriteLine(s10.PadRight(8)); // over시 평상시랑 다름이 없음.
+
+            // 보기 쉽게 만들면?
+            WriteLine(s7.PadLeft(8, '#')); // 왼쪽부터 8칸 떨어진 곳에서부터 시작
+            WriteLine(s8.PadLeft(8, '#'));
+            WriteLine(s9.PadLeft(8, '#'));
+            WriteLine(s10.PadLeft(8, '#')); // over시 평상시랑 다름이 없음.
+            WriteLine("-----");
+            WriteLine(s7.PadRight(8, '$')); // 오른쪽부터 8칸 떨어진 곳에서부터 종료
+            WriteLine(s8.PadRight(8, '$'));
+            WriteLine(s9.PadRight(8, '$'));
+            WriteLine(s10.PadRight(8, '$')); // over시 평상시랑 다름이 없음.
+
+            string s11 = "TigerWin";
+            WriteLine(s11.ToLower());
+            WriteLine(s11.ToUpper());
+        }
+    }
+}
