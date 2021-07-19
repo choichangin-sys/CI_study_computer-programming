@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1
+{
+    class Tiger
+    {
+        public int a = 10;
+
+        // public int f1()
+        public ref int f1()
+        {
+            //return 10;
+            //return a;
+            return ref a; // 메모리 공유 발생! => ref
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Tiger t = new Tiger();
+            int b = t.f1(); // 사용하는 사람이 공유를 하지 않아 실패!
+            b = 100;
+            WriteLine(t.a); // 변환 실패, 10으로 출력됨.
+
+            ref int c = ref t.f1(); // 사용하는 사람이 공유하여 성공!
+            c = 200;
+            WriteLine(t.a); // 200으로 변환됨.
+        }
+    }
+}
