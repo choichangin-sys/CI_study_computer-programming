@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Tiger { }
+    class Program
+    {
+        // int a = 1000;인 것으로 대입연산자가 생략된 것이다.
+        static void m1(int a, Tiger t)
+        {
+
+        }
+        static void m2(int a)
+        {
+
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            long a = 10;
+            // 대입연산자는 반드시 쌍방간에 타입을 통일해야한다.
+            // int b = a; // Error 발생
+            // 1. int b = (int)a; // 강제형변환, 타입캐스팅이라고 한다.
+            // 2. long b = a;
+
+            // C#에는 Pointer가 없다.
+
+            //m1(1000); // int a가 1000을 전달받는다는 개념이 아님.
+
+            Tiger t = new Tiger();
+            m1(1000, t);
+            m1(1000, new Tiger());
+        }
+    }
+}
