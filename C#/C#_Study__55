@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Tiger
+    {
+        public void m1()
+        {
+            WriteLine("test");
+        }
+    }
+
+    class Program
+    {
+        static void m1(Tiger t)
+        {
+            if (t != null)
+            {
+                t.m1(); // 아주 위험한 짓.
+                        // null이든 null이 아니든 무조건 작동하게 만든 것이기에
+                        // 이런 식으로 사용하는 짓은 안된다.
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            int a = 10;
+            int c = a++; // 결과값 : 10
+            //int c = ++a; // 결과값 : 11
+            WriteLine(c); // 10
+
+            //if (true || a++ > 10)
+            if (true || ++a > 10)
+            {
+
+            }
+            WriteLine(a);
+
+            bool b = true;
+            int d = 0; 
+            int e = 1;
+            for (int i = 0; i < 10; i++)
+            {
+                //WriteLine(b); // false, true 반복
+                //b = !b;
+                
+                //WriteLine(d); // 1, 0 반복
+                //d = 1 - d;
+
+                WriteLine(e);
+                e = -1 * e;
+            }
+
+            Tiger t1 = null;
+
+            if (t1 != null)
+            {
+                t1.m1();
+            }
+
+            Tiger t2 = null;
+            t2?.m1();
+            WriteLine("------------");
+            t2 = new Tiger(); 
+            t2.m1(); // 정상작동.
+
+
+        }
+    }
+}
