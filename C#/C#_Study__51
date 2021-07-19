@@ -1,0 +1,441 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Program
+    {
+        // 2번 풀이 ----------------------------------------------------------------------
+        static string m1(int num) 
+        {
+            string str = Convert.ToString(num, 2); // 16진수 -> 2진수로 변환
+            int count = 0;
+
+            if (str.Length != 32)
+            {
+                while (true)
+                {
+                    str = str.Insert(count, "0");
+
+                    if (str.Length == 32)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            for (int i = 0; i < 7; i++)
+            {
+                str = str.Insert(4 * (i + 1) + i, "_");      
+            }
+            
+            return str;
+        }
+        // -------------------------------------------------------------------------------
+
+        static void Main(string[] args)
+        {
+            // 1번.
+            // 1월 1일이 금요일임.
+            // 2021년 달력을 출력하세요.
+            // 단, 윤년은 고려하지 않는다.
+            // 1월달
+            // 일 월 화 수 목 금 토 
+            //                1  2
+            // 3  4  5  6  7  8  9
+            // ...................
+            // 2월달
+            // 일 월 화 수 목 금 토
+            // ...................
+
+            // 2번. 
+            // int num = 0x7f3c7b4d;
+            // 사용법 => string s = m1(num);
+            // s를 출력한 결과화면
+            // 출력결과 반드시 4자리씩 끊어서 나와야한다.
+            // num = 0x3; 이었다면
+            // 결과는
+            // 0000 0000 0000 0000 ... 0011 (핵심은 32자리를 유지하는 것이다.)
+
+            // 3번.
+            // 가로 6칸 세로 5칸의 배열을 사용한다.
+            // 출력 결과
+            /*
+
+            # # # # # #
+            # O . O . #
+            # . O . . #
+            # . O . O #
+            # . . . O #
+            # # # # # #
+
+            이때 반드시 O 6개가 랜덤하게 위치해야한다.
+
+            */
+
+            // 4번.
+            // 배열을 사용하지 않는다.
+            /*
+            int num = 5;
+
+            O O O O O
+            . O O O .
+            . . O . .
+            . O O O .
+            O O O O O
+
+            */
+
+            // 5번.
+            // int[] ar = { 50, 64, 39, 66, 93, 78, 0, 100 };
+            // 이차원 배열을 사용한다.
+            // 히스토그램 작성.
+
+
+
+            // 1번 풀이 ---------------------------------------------------------
+            WriteLine("1번 풀이");
+
+            //WriteLine("일 월 화 수 목 금 토");
+            int day_count = 5; // 금요일 시작
+
+            for (int month = 1; month <= 12; month++)
+            {
+                
+                if (month < 8)
+                {
+                    WriteLine();
+                    WriteLine("이번 달은 " + month + "월 입니다~");
+                    WriteLine("일 월 화 수 목 금 토");
+
+                    if (month % 2 == 1)
+                    {
+                        Write(new string(' ',  3 * day_count));
+                        for (int day = 1; day <= 31; day++)
+                        {
+                            if (day_count == 7)
+                            {
+                                WriteLine();
+                                day_count = 0;
+                            }
+
+                            if (day < 10)
+                            {
+                                Write(" " + day + " ");
+                            }
+                            else
+                            {
+                                Write(day + " ");
+                            }
+                            day_count++;
+                        }
+
+                    } // 홀수달
+                    else
+                    {
+                        if (month != 2)
+                        {
+                            Write(new string(' ', 3 * day_count));
+                            for (int day = 1; day < 31; day++)
+                            {
+                                if (day_count == 7)
+                                {
+                                    WriteLine();
+                                    day_count = 0;
+                                }
+
+                                if (day < 10)
+                                {
+                                    Write(" " + day + " ");
+                                }
+                                else
+                                {
+                                    Write(day + " ");
+                                }
+                                day_count++;
+                            }
+                        } // 2월이 아닌 짝수달
+                        else
+                        {
+                            Write(new string(' ', 3 * day_count));
+                            for (int day = 1; day < 29; day++)
+                            {
+                                if (day_count == 7)
+                                {
+                                    WriteLine();
+                                    day_count = 0;
+                                }
+
+                                if (day < 10)
+                                {
+                                    Write(" " + day + " ");
+                                }
+                                else
+                                {
+                                    Write(day + " ");
+                                }
+                                day_count++;
+                            }
+                        } // 2월 (예외)
+                    } // 짝수달 
+                } // 8월달 미만
+                else
+                {
+                    WriteLine();
+                    WriteLine("이번 달은 " + month + "월 입니다~");
+                    WriteLine("일 월 화 수 목 금 토");
+
+                    if (month % 2 == 1)
+                    {
+                        Write(new string(' ', 3 * day_count));
+                        for (int day = 1; day <= 30; day++)
+                        {
+                            if (day_count == 7)
+                            {
+                                WriteLine();
+                                day_count = 0;
+                            }
+
+                            if (day < 10)
+                            {
+                                Write(" " + day + " ");
+                            }
+                            else
+                            {
+                                Write(day + " ");
+                            }
+                            day_count++;
+                        }
+
+                    } // 홀수달
+                    else
+                    {
+                        Write(new string(' ', 3 * day_count));
+                        for (int day = 1; day <= 31; day++)
+                        {
+                            if (day_count == 7)
+                            {
+                                WriteLine();
+                                day_count = 0;
+                            }
+
+                            if (day < 10)
+                            {
+                                Write(" " + day + " ");
+                            }
+                            else
+                            {
+                                Write(day + " ");
+                            }
+                            day_count++;
+                        }
+                    } // 짝수달 
+                }// 8월 이상
+                WriteLine();
+            }
+            // 8월 이전 짝수가 30일 홀수가 31일 단, 2월은 28일
+            // 8월 이후 짝수가 31일 홀수가 30일
+
+            // ------------------------------------------------------------------
+
+            WriteLine();
+            WriteLine();
+
+            // 2번 풀이 ---------------------------------------------------------
+            WriteLine("2번 풀이");
+            int num = 0x7f3c7b4d;
+            string str = m1(num);
+            WriteLine(str);
+            // ------------------------------------------------------------------
+
+            WriteLine();
+            WriteLine();
+
+            // 3번 풀이 ---------------------------------------------------------
+            WriteLine("3번 풀이");
+
+            // 생성
+            string[,] arr = new string[6, 6];
+
+            for (int i = 0; i < 6; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    if (i == 0 || i == 5)
+                    {
+                        arr[i, j] = " #";
+                    }
+                    else if (j == 0 || j == 5)
+                    {
+                        arr[i, j] = " #";
+                    }
+                    else
+                    {
+                        arr[i, j] = " .";
+                    }
+                }
+            }
+
+            
+            // 변환
+            Random random = new Random();
+            int change_count = 0;
+
+            while(true)
+            { 
+                int ran_x = random.Next(1, 6); // X축 1~5까지 랜덤 발생.
+                int ran_y = random.Next(1, 6); // Y축 1~5까지 랜덤 발생.
+                if (change_count <= 5)
+                {
+                    if (arr[ran_x, ran_y] == " .")
+                    {
+                        arr[ran_x, ran_y] = " O";
+                        change_count++;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // 출력
+            int q3_count = 0;
+
+            for (int i = 0; i < 6; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    if (q3_count == 6)
+                    {
+                        WriteLine();
+                        q3_count = 0;
+                    }
+                    Write(arr[i, j]);
+                    q3_count++;
+                }
+            }
+
+            // ------------------------------------------------------------------
+
+            WriteLine();
+            WriteLine();
+
+            // 4번 풀이 ---------------------------------------------------------
+            WriteLine("4번 풀이");
+
+            int input;
+
+            while (true)
+            {
+                Write("입력하세요! : ");
+                input = int.Parse(ReadLine());
+                int space = 0;
+                WriteLine();
+
+                if (input % 2 == 1)
+                {
+                    for (int i = 1; i <= input; i++)
+                    {
+                        if (i % 2 == 1)
+                        {
+                            Write(new string('O', input - (2 * (i - 1)) / 2));
+                            space++;
+                            WriteLine();
+                        }
+                        else
+                        {
+                            Write(new string(' ', space));
+                        }
+                    }
+
+                    for (int j = 1; j <= input - 1; j++)
+                    {
+                        if (j % 2 == 1)
+                        {
+                            Write(new string(' ', space - 2));
+                        }
+                        else
+                        {
+                            Write(new string('O', (3 * j - (2 * (j - 1)) - 1)));
+                            space--;
+                            WriteLine();
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    WriteLine("짝수입니다. 홀수를 입력하세요.");
+                    WriteLine();
+                }
+            }
+
+            // ------------------------------------------------------------------
+
+            WriteLine();
+            WriteLine();
+
+            // 5번 풀이 ---------------------------------------------------------
+            WriteLine("5번 풀이");
+
+            int[] ar = { 50, 64, 39, 66, 93, 78, 0, 100 };
+            
+            // 나누기
+            for (int i = 0; i < ar.Length; i++)
+            {
+                ar[i] = ar[i] / 10;
+            }
+
+            // 생성
+            string[,] ar_5q = new string[10, 8];
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    ar_5q[i, j] = " .";
+                }
+            }
+            
+            // 변환
+            for (int count = 0; count < 8; count++) 
+            {
+                for (int y = 0; y < ar[count]; y++)
+                {
+                    ar_5q[9 - y, count] = " O";
+                }
+            }
+
+            // 출력
+            int q5_count = 0;
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (q5_count == 8)
+                    {
+                        WriteLine();
+                        q5_count = 0;
+                    }
+                    Write(ar_5q[i, j]);
+                    q5_count++;
+                }
+            }
+            WriteLine();
+
+            // ------------------------------------------------------------------
+
+            WriteLine();
+            WriteLine();
+        }
+    }
+}
