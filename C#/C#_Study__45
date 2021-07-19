@@ -1,0 +1,72 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class 커피
+    {
+        int num = 30;
+        public virtual int 가격()
+        {
+            WriteLine("커피 주문");
+            return num;
+        }
+    }
+    class 설탕 : 커피
+    {
+        int num = 20;
+        커피 a;
+        public 설탕(커피 a)
+        {
+            this.a = a;
+        }
+        public override int 가격() // 자식 클래스는 override를 같이 써야한다.
+        {
+            WriteLine("설탕 주문");
+            return num + a.가격();
+        }
+    }
+
+    class 프림 : 커피
+    {
+        int num = 10;
+        커피 a;
+        public 프림(커피 a)
+        {
+            this.a = a;
+        }
+        public override int 가격()
+        {
+            WriteLine("프림 추가");
+            return num + a.가격();
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            커피 a = new 커피();
+            // a.run();
+            a = new 설탕(a);
+            a = new 프림(a);
+            a = new 프림(a);
+            a = new 프림(a);
+            WriteLine(a.가격());
+            /*
+            // 결과값
+            C Run
+            B Run
+            A Run
+            60 
+            */
+        }
+    }
+}
