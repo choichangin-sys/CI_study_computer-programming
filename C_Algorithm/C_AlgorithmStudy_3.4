@@ -1,0 +1,84 @@
+// 출처 표시 : "문제로 풀어보는 알고리즘" <저자 : 황인욱, 김용혁 지음> <출판사 : 인사이트> <출간년도 : 초판 2012년 8월 5일 (8쇄 : 2018년 11월 20)>
+
+/*
+	<이진수로 나타내기>
+	N과 K를 입력받아 값이 1인 비트가 K개인 길이 N인 인지수를 모두 출력하는 프로그램
+*/
+
+#include <stdio.h>
+#include <stdlib.h> 
+
+void print_arr(int* arr, int arr_len)
+{
+	for (int i = 0; i < arr_len; i++)
+	{
+		printf("%d ", arr[i]);
+	} printf("\n");
+}
+
+void comb(int* arr, int n, int k, int set_size, int index)
+{
+	if (k == 0)
+	{
+		print_arr(arr, set_size);
+	}
+	else if (index == n)
+	{
+		return;
+	}
+	else
+	{
+		arr[set_size] = index;
+		comb(arr, n, k - 1, set_size + 1, index + 1); // index 포함하는 경우
+		comb(arr, n, k, set_size, index + 1);		  // index 제외하는 경우
+	}
+}
+
+// C_AlgorithmStudy_3.3에서 추가한 것. =====================================
+void comb2(int* arr, int n, int k, int index)
+{
+	if (k == 0)
+	{
+		for (int i = index; i < n; i++)
+		{
+			arr[i] = 0;
+		}
+
+		print_arr(arr, n);
+	}
+	else if (index == n)
+	{
+		return;
+	}
+	else
+	{
+		arr[index] = 0;
+		comb2(arr, n, k, index + 1);	 // index 제외하는 경우
+		arr[index] = 1;
+		comb2(arr, n, k - 1, index + 1); // index 포함하는 경우
+	}
+}
+// ======================================================================
+
+int main()
+{
+	int n = 0, k = 0;
+
+	printf("N개 중 K개를 뽑을 수 있는 경우의 수는? ");
+	scanf_s("%d %d", &n, &k);
+
+	int* arr = (int*)malloc(sizeof(int) * n);
+
+	/*
+	// 확인 작업
+	for (int i = 1; i < n + 1; i++)
+	{
+		arr[i] = i;
+		printf("%d ", arr[i]);
+	}
+	*/
+
+	//comb(arr, n, k, 0, 0);
+	comb2(arr, n, k, 0);
+	return 0;
+}
