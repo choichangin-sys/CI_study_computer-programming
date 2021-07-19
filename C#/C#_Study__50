@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    // 중복되는 것 뽑아내기
+    class C
+    {
+        protected ArrayList al = new ArrayList();
+
+        public void add(Animal gogek)
+        {
+            al.Add(gogek);
+        }
+        public void remove(int gogeknum)
+        {
+            al.RemoveAt(gogeknum);
+        }
+
+    }
+
+    // A 클래스는 신문사(경향일보)이다.
+    class A : C
+    {
+        // 고객관리 리스트.
+        //ArrayList al = new ArrayList(); // C 클래스로 이동.
+        string news;
+
+        //public void add(Animal gogek)
+        //{
+        //    al.Add(gogek);
+        //}
+        //public void remove(int gogeknum)
+        //{
+        //    al.RemoveAt(gogeknum);
+        //}
+        public void showInfo()
+        {
+            foreach (gogek item in al)
+            {
+                //WriteLine(item.name);
+            }
+        }
+        public void setNews (string news)
+        {
+            this.news = news;
+            notify();
+        }
+        public void notify()
+        {
+            foreach (Animal item in al)
+            {
+                item.update(news);
+            }
+        }
+    }
+
+    // B 클래스는 신문사(경향일보)이다.
+    class B : C
+    {
+        // 고객관리 리스트.
+        //ArrayList al = new ArrayList(); // C 클래스로 이동.
+        int 온도, 습도;
+
+        //public void add(Animal gogek)
+        //{
+        //    al.Add(gogek);
+        //}
+        //public void remove(int gogeknum)
+        //{
+        //    al.RemoveAt(gogeknum);
+        //}
+        public void setNews(int 온도, int 습도)
+        {
+            this.온도 = 온도;
+            this.습도 = 습도;
+            notify();
+        }
+        public void notify()
+        {
+            // 필요하게 수정하면 됨 (A처럼)
+            // 비슷하므로 딱히 만들지 않음.
+        }
+    }
+
+    interface Animal
+    {
+        void update(string news);
+        void update(int 온도, int 습도);
+        
+    }
+
+    class gogek : Animal
+    {
+        public string name;
+        public gogek(string name)
+        {
+            this.name = name;
+        }
+        public void update(string news)
+        {
+            WriteLine(name + " : " + news);
+        }
+
+        public void update(int 온도, int 습도)
+        {
+            WriteLine(name + "온도 : " + 온도 + "온도 : " + 습도);
+        }
+    }
+
+    class googek : Animal
+    {
+        public string name;
+        public googek(string name)
+        {
+            this.name = name;
+        }
+        public void update(string news)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                WriteLine(name + " : " + news + i);
+            }
+        }
+        public void update(int 온도, int 습도)
+        {
+            WriteLine(name + "온도 : " + 온도 + "온도 : " + 습도);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            A a = new A();
+            a.add(new gogek("고객1"));
+            a.add(new googek("고객2"));
+            //a.remove(1);
+            a.showInfo();
+            a.setNews("장마");
+            a.setNews("코로나");
+
+            B b = new B();
+            b.add(new gogek("고객1"));
+            b.add(new googek("고객2"));
+            b.setNews(20, 30);
+        }
+    }
+}
+// 수정중 문제점이 발생했으나 옵저버 패턴에 대한 설명은 충분히 들었음.
