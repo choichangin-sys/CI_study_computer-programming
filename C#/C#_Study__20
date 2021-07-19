@@ -1,0 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            ArrayList al = new ArrayList();
+            //CRUD 중에서 Create(add, insert, create를 이름으로 나타낼 수 있다.)
+            al.Add("호랑이");
+            WriteLine(al.Count);
+            al.Add("코끼리");
+            al.Add("독수리");
+            WriteLine(al.Count);
+
+            for (int i = 0; i < 10; i++)
+            {
+                al.Add(i * 10 + "한");
+            }
+            WriteLine(al.Count);
+
+            foreach (var item in al)
+            {
+                Write(item + " ");
+            }
+            WriteLine();
+        }
+    }
+}
