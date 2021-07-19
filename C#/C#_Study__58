@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void m1(int a, int b)
+        {
+            int t = a;
+            a = b;
+            b = t;
+        }
+
+        static void m2(ref int a, ref int b)
+        {
+            int t = a;
+            a = b;
+            b = t;
+        }
+
+        static void Main(string[] args)
+        {
+            int x = 3, y = 5;
+            WriteLine(x + " " + y);
+
+            m1(x, y);
+            WriteLine(x + " " + y); // 변환 불가
+
+            m2(ref x, ref y);
+            WriteLine(x + " " + y); // 변환 성공
+        }
+    }
+}
