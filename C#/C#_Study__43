@@ -1,0 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class AA // 부모 클래스
+    {
+        public void f1()
+        {
+            WriteLine(1);
+        }
+        public virtual void f2()
+        {
+            WriteLine(2);
+        }
+        public virtual void f3()
+        {
+            WriteLine(5);
+        }
+    }
+
+    class BB : AA // 상속, 자식 클래스
+    {
+        public void f1()
+        {
+            WriteLine(3);
+        }
+        public override void f2()
+        {
+            WriteLine(4);
+        }
+    }
+
+    class CC : AA // 상속, 자식 클래스
+    {
+
+    }
+
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            AA t1 = new AA();
+            BB t2 = new BB();
+            AA t3 = new BB(); // 부모(AA) = 자식(BB), AA문법 밖에 사용하지 못하나 메모리는 AA와 BB를 사용한다.
+            //BB t4 = new AA(); // C#에서는 사용을 안하는 문법이며 C++에서는 사용한다.
+
+            AA t4 = new BB();
+            // AA + BB 메모리가 없어지고 AA + CC가 생성된다.
+            WriteLine(t4.GetHashCode()); // 확인
+            t4 = new CC();
+            WriteLine(t4.GetHashCode()); // 확인
+            t4 = new BB();
+            WriteLine(t4.GetHashCode()); // 확인
+            // 처음과 마지막은 같은 구조지만 새로 잡혔기 때문에 다른 주소값의 메모리이다.
+            // 가운데는 구조도 다르고 주소값도 다르다.
+
+            t2.f1();
+            t2.f2();
+            t2.f3();
+
+            t3.f1();
+            t3.f2();
+            t3.f3();
+        }
+    }
+}
