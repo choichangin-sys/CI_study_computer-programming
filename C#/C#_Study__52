@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Program
+    {
+        enum Color 
+        { 
+            Red, Green, Blue
+        };
+
+        static void Main(string[] args)
+        {
+            WriteLine(Color.Red);
+            WriteLine((int)Color.Green);
+            WriteLine((int)Color.Blue);
+        }
+    }
+}
