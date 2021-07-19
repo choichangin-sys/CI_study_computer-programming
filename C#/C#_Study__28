@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Star
+    {
+        public Star(int id, int age)
+        {
+            this.id = id;
+            this.age = age;
+        }
+        public int id;        
+        public int age;
+    }
+    class Program
+    { 
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // 숫자를 입력하세요. 단, 99가 입력되면 종료입니다.
+
+            // 첫 화면
+            // 0 1 2 3 4 5 6 7 8 9
+            // 0 0 0 0 0 0 0 0 0 0 
+
+            // 99가 아닐 때
+            // 1 4 7 8 10 11 12 13 14 15
+            // 1 1 1 1 0  0  0  0  0  0
+
+            // 랜덤으로 살아남는다. 또한, 살아남은 숫자는 아래 숫자가 증가한다. 
+            // 항상 10개를 유지한다.
+
+            // 99가 아닐 때
+            // 1 7 8 11 12 14 16 17 18 19
+            // 2 2 2 1  0  0  0  0  0  0
+            ArrayList al = new ArrayList();
+            Random random = new Random();
+            int ct = 1;
+
+            while (true)
+            {
+                // 조건에 따라서 랜덤하게 데이터를 삭제
+                for (int i = 0; i < al.Count;)
+                {
+                    if (random.Next(2) == 0)
+                    {
+                        al.RemoveAt(i);
+                    }
+                    else
+                    {
+                        ((Star)al[i]).age++;
+                        i++;
+                    }
+                }
+
+                // 데이터 추가
+                while (al.Count < 10)
+                {
+                    al.Add(new Star(ct++, 0));
+                }
+
+                foreach (Star item in al)
+                {
+                    Write("{0:d2} ", item.id);
+
+                }WriteLine();
+
+                foreach (Star item in al)
+                {
+                    Write("{0:d2} ", item.age);
+                }
+                WriteLine();
+
+                // 탈출조건 ----------------------------------------
+                Write("입력하세요! : ");
+                int input = int.Parse(ReadLine());
+                WriteLine("input입니다 : {0}", input);
+                if (input == 99)
+                {
+                    WriteLine("시스템 종료합니다.");
+                    break;
+                }
+                // -------------------------------------------------
+
+            } // While문 괄호.
+        }
+    }
+}
