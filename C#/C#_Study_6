@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            WriteLine(10); // 10진수
+            WriteLine(0x10); // 16진수
+            WriteLine(0b10); // 2진수 
+            WriteLine(0b_0101_0111); // 2진수는 4자리씩 끊어 읽는게 일반적이므로 왼쪽과 같이 사용 가능
+        }
+    }
+}
