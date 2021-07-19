@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            string s = "무궁화 꽃이 피었습니다.";
+            WriteLine(s.Length);
+            WriteLine(s.IndexOf("꽃이"));
+            WriteLine(s.LastIndexOf("꽃이"));
+
+            WriteLine(s.IndexOf("나무이")); // 검색 실패 시 -1을 반환
+            WriteLine(s.LastIndexOf("나무이")); // 검색 실패시 -1을 반환
+
+            // Pc방 >> 종료...
+            // 1, 2, 3, 4, 5, 6, 7, 8 ,9, 10
+
+            if (s.IndexOf("나무") == -1)
+            {
+                WriteLine("못찾음.");
+            }
+            WriteLine(s.Contains("꽃")); // True
+            WriteLine(s.Contains("나무")); // False
+
+            WriteLine(s.StartsWith("무궁")); // True
+            WriteLine(s.StartsWith("궁화")); // False
+            WriteLine(s.EndsWith("니다.")); // True
+            WriteLine(s.EndsWith("이다.")); // False
+        }
+    }
+}
