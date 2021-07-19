@@ -1,0 +1,65 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            int? a = null;
+            int? b = 10;
+            int c = 20;
+
+            WriteLine(a.HasValue);
+            WriteLine(b.HasValue);
+
+            // 문법 자체를 사용할 수 없다.
+            //WriteLine(c.HasValue);
+
+            //WriteLine(a.Value); // Error가 발생하여 아래 호랑이 출력 불가.
+            //WriteLine("호랑이");
+
+            try
+            {
+                WriteLine(a.Value);
+            }
+            catch (Exception)
+            {
+                WriteLine("catch");
+            }
+
+            WriteLine("호랑이"); // 이 경우 호랑이 출력됨.
+            WriteLine(b.Value);
+            WriteLine(b);
+
+            WriteLine(a.GetValueOrDefault()); // 값이 없으면 0을 출력함.
+            WriteLine(b.GetValueOrDefault()); // 값이 있으면 그 값을 출력함.
+
+            WriteLine(a.GetValueOrDefault(-100)); // 만약 값이 없으면 원하는 값을 가져오게 설정.
+
+            if (a == null)
+            {
+                WriteLine(-1);
+            }
+            else
+            {
+                WriteLine(a);
+            }
+
+            // 삼항연산
+            WriteLine(a == null ? -1 : a);
+
+            // null 통합 연산
+            WriteLine(a ?? -1); // 삼항연산과 똑같다. 더 함축한 것임.
+
+            WriteLine(b ?? -1);
+        }
+    }
+}
