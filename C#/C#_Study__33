@@ -1,0 +1,77 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // 파티클 프로그램.
+    class Program
+    { 
+        static double DegreeToRadian(double degree)
+        {
+            return Math.PI * degree / 180.0;
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // 디셔너리와 유사하다.
+            SortedList s1 = new SortedList();
+            //s1.Add("10", "호랑이1");
+            //s1.Add("30", "호랑이2");
+            //s1.Add("20", "호랑이3");
+
+            s1.Add("apple", "호랑이1");
+            s1.Add("orange", "호랑이2");
+            s1.Add("banana", "호랑이3");
+
+            //foreach (DictionaryEntry item in s1)
+            //{
+            //    WriteLine($"{item.Key} \t {item.Value}");
+            //}
+
+            // ------------------------------------------------------------------
+
+            s1.Add("kiwi", "키위1");
+            //s1.Add("kiwi", "키위2"); // Error 발생
+            s1["kiwi"] = "키위2"; // 가능
+
+            //foreach (DictionaryEntry item in s1)
+            //{
+            //    WriteLine($"{item.Key} \t {item.Value}");
+            //}
+
+            
+
+            /*
+            apple  호랑이1
+            banana 호랑이3
+            kiwi   키위2
+            orange 호랑이2
+            */
+
+            s1.SetByIndex(1, "독수리");
+            s1.RemoveAt(0);
+            foreach (DictionaryEntry item in s1)
+            {
+                WriteLine($"{item.Key} \t {item.Value}");
+            }
+
+            WriteLine();
+            WriteLine(s1.GetByIndex(0));
+
+            IList keys = s1.GetKeyList();
+            IList values = s1.GetKeyList();
+
+            foreach (var item in values)
+            {
+                WriteLine(item);
+            }
+        }
+    }
+}
