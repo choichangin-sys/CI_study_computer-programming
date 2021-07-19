@@ -15,10 +15,10 @@ Linux는 VMware을 이용하여 1개의 컴퓨터로 4개의 가상 컴퓨터를
 
 비트교육센터에서 Window.Net 전문가 과정을 이수함. (2021/04/28 ~ 2021/07/29)
 
-=> C | C++ | WindowProject | MFC | SystemPrograming | NetworkProgramming은 Visual Studio 2019를 사용하여 코딩했음.
+=> C | C++ | C# | WindowProject | MFC | SystemPrograming | NetworkProgramming은 Visual Studio 2019를 사용하여 코딩했음.
 
 => DBMS는 Oracle DataBase를 사용했고, cmd 환경에서 코딩했음.
 
 => Python은 Python 3.8 Version과 PyCham 2021.1.2 Version을 사용하여 코딩했음.
 
-=> 이수한 과목 | C | C++ | WindowsProject | MFC | SystemPrograming | NetworkProgramming | DBMS | Python
+=> 이수한 과목 | C | C++ | C# | WindowsProject | MFC | SystemPrograming | NetworkProgramming | DBMS | Python
