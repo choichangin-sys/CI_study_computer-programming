@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    class Program
+    {
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            string s1 = "tiger";
+            string s2 = "lion";
+            string s3 = s1 + s2;
+
+            // 연결함수
+            string s4 = "tiger";
+            string s5 = "lion";
+            string s6 = string.Concat(s4, s5);
+
+            // 문자열 삽입
+            string s7 = "무궁화꽃이 피었습니다.";
+            WriteLine(s7.Insert(5, "호랑이"));
+            WriteLine(s7); // s7, 원본 자체를 건드는 것이 아니다.
+
+            string s8 = s7.Insert(5, "호랑이"); // s7, 원본 자체를 수정 후 저장.
+            WriteLine(s8); 
+
+            // 문자열 제거
+            WriteLine(s7.Remove(5));
+            WriteLine(s7); // s7, 원본 자체를 건드는 것이 아니다.
+            WriteLine(s7.Remove(5, 2)); // 5번쨰부터 2글자 삭제, 0부터 시작이다. ( 0 = '무' )
+
+            // 검색 및 수정
+            WriteLine(s7.Replace("꽃이", "나무가")); // 꽃이를 찾아서 나무가로 바꿈.
+
+            string s10 = "호랑이";
+            string s11 = "코끼리";
+
+            // 같으면 리턴값은 0이다.
+            WriteLine(s10.CompareTo("호랑이")); // 0
+            WriteLine(s11.CompareTo("호랑이")); // -1
+            WriteLine(s10.CompareTo("호랑이만세")); // -1
+            WriteLine(s10.CompareTo("호랑")); // 1, 일부만 같으면 1나옴.
+
+            string s12 = null;
+            string s13 = "코끼리";
+            //WriteLine(s12.CompareTo("호랑이")); // 예외처리됨, Error 발생.
+
+            WriteLine(string.Compare(s12, s13)); // 이때, Compare을 사용.
+
+            try
+            {
+               WriteLine(s12.CompareTo("호랑이"));
+            }
+            catch (Exception)
+            {
+                WriteLine("익셉션 발생");
+            }
+            WriteLine(string.Compare(null, "tiger"));
+            WriteLine(string.Compare("tiger", null));
+            WriteLine(string.Compare(null, null));
+
+
+            Clear();
+            // 같으면 리턴값은 0이다.
+            // 대소 구분을 안한다.
+            WriteLine(string.Compare("Tiger", "tiger", true));
+            // 대소 구분을 한다.
+            WriteLine(string.Compare("Tiger", "tiger", false));
+            // 디폴트가 false이다.
+            WriteLine(string.Compare("Tiger", "tiger"));
+
+            WriteLine("Tiger".Equals("Tiger"));
+            WriteLine("Tiger".Equals("Lion"));
+
+            string s14 = "무궁화꽃이 피었습니다.";
+            // Length 함수가 아니다.
+            // 속성 : Length
+            // Length는 멤버 변수가 아니다.
+            // Length는 Property이다.
+            WriteLine(s14.Length);
+        }
+    }
+}
