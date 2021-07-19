@@ -1,0 +1,66 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+using static System.Console; // Console 생략 가능하게 해줌.
+using System.Collections;
+
+namespace ConsoleApp1 // 옵저버 패턴
+{
+    class Tiger
+    {
+        public void m1()
+        {
+            WriteLine("test");
+        }
+    }
+
+    class Program
+    {
+        static void f1(int a, int b)
+        {
+            int t;
+            t = a;
+            a = b;
+            b = t;
+
+        }
+        static void f2(int *a, int *b)
+        {
+            if (a == null && b == null) // 방어적 프로그램.
+            {
+                return;
+            }
+
+            int t;
+            t = *a;
+            *a = *b;
+            *b = t;
+
+        }
+        static void f3(int& a, int& b) // 포인터보다 참조를 이용한 f3 방식이 좋다.
+        {
+            int t;
+            t = a;
+            a = b;
+            b = t;
+
+        }
+        static void Main(string[] args)
+        {
+            int x = 10;
+            int y = 20;
+
+            f1(x, y);
+
+            f2(&x, &y); // null이 있을 수도 있으니 방어적 프로그램을 넣어줘야한다.
+            WriteLine(x + " " + y);
+
+            f3(x, y); // null이 들어갈 수 없으므로 방어적 프로그램이 없어도 된다.
+            WriteLine(x + " " + y);
+        }
+    }
+}
