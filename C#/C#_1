@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+// #include가 없어지고 using으로 변했으며 기능(외부의 라이브러리 불러오는 것)은 같다.
+
+namespace ConsoleApp1 // 메모리 해제 문법이 C#에는 없다.
+{
+    // C#에서 알아야하는 것.
+    // 1. 생성자
+    // 2. 멤버 변수 (필드)
+    // 3. 멤버 메소드 (함수)
+
+    class Program
+    {
+        Program() // 생성자
+        {
+
+        }
+
+        static int num; // 멤버 변수
+
+        static void m1() // 멤버 메소드
+        {
+            // 출력
+            Console.WriteLine(num); // 자동 출바꿈 있음.
+            Console.Write(num);
+            Console.WriteLine(num);
+        }
+
+        static void Main(string[] args) // 무조건 클레스로 감싸야 돌아간다.
+        {
+            // static이 없으면 OS에서 Main을 호출할 때 문제가 생긴다. 그렇기에 엔트리포인트 찾기 위해 
+            // 모든 Main은 static으로 해줘야한다.
+            // static 함수안에서는 static 멤버 변수, 멤버 함수만 사용할 수 있다.
+            num = 10;
+
+            //this.m1(); // static에서는 this 사용 불가
+            m1();
+            
+        }
+    }
+}
