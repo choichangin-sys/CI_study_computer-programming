@@ -1,0 +1,63 @@
+출처 표시 : "이것이 리눅스다 [개정판][with RedHat CentOS 8]" <저자 : 우재남> <출판사 : 한빛미디어> <출간년도 : 초판 2015년 7월 1일 (개정판 2쇄 : 2020년 9월 20일)>
+
+X윈도우 = GNOME
+
+root가 아니면 명령어에 제한이 있다. 이때 Super User로 접속하든 su를 통해 명령어를 입력하는 방법이 있다.
+-> si -c 'dnf -y install gnome-tweak-tool' (테마를 바꾸는 명령)(이때 Super User인 root의 비밀번호가 필요하다.)
+-> cmd에서 gnome-tweaks를 입력해 테마 변경이 가능하다.
+
+su -c 'mv wall.png /boot/grub2' (사진 이동)
+
+su -c 'ls -l /boot/grub2' (정상적으로 이동했는지 확인)
+
+su -c 'gedit /etc/default/grub' (File 편집을 위해 열기, 초기화면 변경)
+
+해당 File(grub)을 하기와 같이 수정
+
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+#GRUB_TERMINAL_OUTPUT="console" // 해당 부분 주석 처리, 검정 화면이 되는 이유
+GRUB_CMDLINE_LINUX="crashkernel=auto resume=/dev/mapper/cl-swap rd.lvm.lv=cl/root rd.lvm.lv=cl/swap rhgb quiet"
+GRUB_DISABLE_RECOVERY="true"
+GRUB_ENABLE_BLSCFG=true
+GRUB_BACKGROUND="/boot/grub2/wall.png" // 해당 부분 BACKGROUND의 사진으로 변경
+
+su -c 'grub-mkconfig -o /boot/grub2/grub.cfg'
+
+==============================================================================================================================================
+
+파일 브라우저 - 노틸러스
+
+노틸러스(Nautilus)는 GNOME 데스크톱 환경에서 제공되는 파일 관리자로, Windows의 '파일 탐색기'와 비슷한 역할을 한다.
+
+브라세로(Beasero) : Linux에서 CD를 굽는데 사용하는 기본툴
+
+rpm -qi firefox : Firefox의 Version을 확인
+
+su - : root로 변환시키는 명령어
+
+Firefox 업데이트를 위해 다운을 받고 다운로드 폴더로 이동, 이때 root여야한다.
+
+tar xfj firefox-70.0.1.tar.bz2 : 압축 풀기
+
+mv firefox /usr/local/ : usr/local/로 firefox를 이동
+
+chown -R root.root /user/local/firefox/ : user/local/firefox/ 경로의 사용자(root)와 사용 그룹(root)로 소유주 변동(-R의 의미)
+
+cd /usr/local/bin/
+
+ln -s /usr/local/firefox/firefox . : 현재 폴더(.)으로 해당 부분의 링크를 걸어라
+
+==============================================================================================================================================
+
+dnf -y install make perl patch kernel-devel kernel-devel-4.18.0-80.el8.x86_64 elfutils-libelf-devel : VirtualBox를 사용하는데 필한 추가 패키지 설치 명령
+
+su -c 'dnf -y install Vir*' : Linux에서 Windows 환경을 가상 머신을 통해 사용을 위해 명령어를 입력하여 설치
+
+usermod -a -G vboxuser centos : 가상 환경에 centos 옮겨준 것
+
+/usr/lib/virtualbox/vboxdrv.sh setup : 가상 환경을 사용할 수 있는 Driver 설치
+
+/sbin/vboxconfig 
